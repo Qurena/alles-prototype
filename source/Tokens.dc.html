@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Дизайн-токены ИИ-проверки</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="box-sizing: border-box; min-height: 100vh; padding: 48px 24px 80px; background: #F6F7FA; color: #020618; font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased">
+<div style="box-sizing: border-box; max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+
+<header style="display: flex; flex-direction: column; gap: 10px; max-width: 760px">
+<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 8px; font-size: 15px; line-height: 20px; font-weight: 800; color: #7E36FC; text-decoration: none">← К прототипу</a>
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 700; color: #5A6880">ИИ-проверка домашних заданий · концепт для Alles</p>
+<h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; letter-spacing: -0.02em">Дизайн-токены</h1>
+<p style="margin: 0; font-size: 16px; line-height: 26px; font-weight: 500; color: #45556C">Значения, на которых собран прототип. Акцент — фирменный фиолетовый Alles, снятый со скринов витрины. Шрифт Manrope с кириллицей. Контраст указан к фону карточки (bg/surface) по WCAG 2.1, если не сказано иначе.</p>
+</header>
+
+<section aria-labelledby="t-colors" style="display: flex; flex-direction: column; gap: 20px">
+<h2 id="t-colors" style="margin: 0; font-size: 24px; line-height: 32px; font-weight: 800; letter-spacing: -0.01em">Цвета</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(560px, 100%), 1fr)); gap: 24px; align-items: start">
+<sc-for list="{{panels}}" as="p" hint-placeholder-count="2">
+<div style="box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; padding: 24px; border-radius: 12px; background: {{p.bg}}; border: 1px solid {{p.border}}; color: {{p.text}}">
+<h3 style="margin: 0; font-size: 18px; line-height: 26px; font-weight: 800">{{p.title}}</h3>
+<sc-for list="{{p.groups}}" as="g" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h4 style="margin: 0 0 6px; font-size: 13px; line-height: 18px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: {{p.muted}}">{{g.title}}</h4>
+<sc-for list="{{g.items}}" as="t" hint-placeholder-count="4">
+<div style="box-sizing: border-box; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; column-gap: 14px; align-items: center; padding: 8px 0; border-top: 1px solid {{p.border}}">
+<span aria-hidden="true" style="box-sizing: border-box; width: 40px; height: 40px; border-radius: 8px; background: {{t.hex}}; border: 1px solid {{p.swatchBorder}}"></span>
+<div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; line-height: 20px; font-weight: 800">{{t.name}}</span>
+<span style="font-size: 13px; line-height: 18px; font-weight: 500; color: {{p.muted}}">{{t.use}}</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right">
+<span style="font-size: 13px; line-height: 18px; font-weight: 700; font-variant-numeric: tabular-nums">{{t.hex}}</span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 600; color: {{p.muted}}">{{t.ratio}}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="t-status" style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 id="t-status" style="margin: 0; font-size: 24px; line-height: 32px; font-weight: 800; letter-spacing: -0.01em">Статусы и пометки ИИ</h2>
+<p style="margin: 0; font-size: 15px; line-height: 24px; font-weight: 500; color: #45556C">Статус всегда передаётся цветом и иконкой одновременно. Других ярких цветов, кроме фиолетового и трёх статусных, в интерфейсе нет.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(560px, 100%), 1fr)); gap: 24px">
+<sc-for list="{{statusPanels}}" as="p" hint-placeholder-count="2">
+<div style="box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 24px; border-radius: 12px; background: {{p.bg}}; border: 1px solid {{p.border}}; color: {{p.text}}">
+<h3 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 800">{{p.title}}</h3>
+<div style="display: flex; flex-wrap: wrap; gap: 12px 24px">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px; line-height: 22px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="11" fill="{{p.successIcon}}"></circle><path d="M6.6 11.4l2.9 2.9 5.9-6.2" fill="none" stroke="{{p.glyph}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Засчитан</span>
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px; line-height: 22px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="11" fill="{{p.dangerIcon}}"></circle><path d="M7.8 7.8l6.4 6.4M14.2 7.8l-6.4 6.4" fill="none" stroke="{{p.glyph}}" stroke-width="2.2" stroke-linecap="round"></path></svg>Не засчитан</span>
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px; line-height: 22px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="11" fill="{{p.warningIcon}}"></circle><path d="M11 6.2v6.2" fill="none" stroke="{{p.glyph}}" stroke-width="2.4" stroke-linecap="round"></path><circle cx="11" cy="15.8" r="1.4" fill="{{p.glyph}}"></circle></svg>Спорно, нужно внимание</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span style="box-sizing: border-box; display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; background: {{p.accentSubtle}}; color: {{p.accentText}}; font-size: 13px; line-height: 16px; font-weight: 700">Проверено ИИ · 2 мин назад</span>
+<span style="box-sizing: border-box; display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: {{p.accentSubtle}}; color: {{p.accentText}}; font-size: 12px; line-height: 16px; font-weight: 700">Черновик ИИ</span>
+<span style="box-sizing: border-box; display: inline-flex; align-items: center; min-height: 24px; padding: 2px 10px; border-radius: 999px; background: {{p.warningBg}}; color: {{p.warning}}; border: 1px solid {{p.warningBorder}}; font-size: 12px; line-height: 16px; font-weight: 700">ИИ дал 1, прогоны разошлись</span>
+<span style="box-sizing: border-box; display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 999px; background: {{p.accent}}; color: #FFFFFF; font-size: 14px; line-height: 18px; font-weight: 700">Подтвердить ИИ · 12</span>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 30px; font-weight: 500"><mark style="padding: 3px 4px; border-radius: 4px; background: {{p.hlNeutral}}; color: {{p.text}}">днём бы испарялось слишком много воды.</mark> <mark style="padding: 3px 4px; border-radius: 4px; background: {{p.hlWarn}}; color: {{p.text}}; box-shadow: inset 0 -2px 0 {{p.warningIcon}}">А днём растение просто фотосинтезирует.</mark></p>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="t-type" style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 id="t-type" style="margin: 0; font-size: 24px; line-height: 32px; font-weight: 800; letter-spacing: -0.01em">Типографика · Manrope</h2>
+<p style="margin: 0; font-size: 15px; line-height: 24px; font-weight: 500; color: #45556C">Размер / межстрочный интервал в пикселях и начертание. Заголовки с трекингом −0,02em. У ученика основной текст 16 px, у куратора плотный 14 px.</p>
+</div>
+<div style="box-sizing: border-box; display: flex; flex-direction: column; padding: 8px 24px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E2E8F0">
+<sc-for list="{{typeScale}}" as="s" hint-placeholder-count="8">
+<div style="box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 6px 24px; align-items: baseline; padding: 16px 0; border-top: 1px solid {{s.divider}}">
+<span style="font-size: {{s.size}}; line-height: {{s.lh}}; font-weight: {{s.weight}}; letter-spacing: {{s.ls}}; color: #020618">{{s.sample}}</span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; line-height: 20px; font-weight: 800">{{s.name}}</span>
+<span style="font-size: 13px; line-height: 18px; font-weight: 600; color: #5A6880">{{s.spec}}</span>
+</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 24px; align-items: start">
+
+<section aria-labelledby="t-radius" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 24px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E2E8F0">
+<h2 id="t-radius" style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 800">Скругления</h2>
+<sc-for list="{{radii}}" as="r" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 14px; align-items: center">
+<span aria-hidden="true" style="box-sizing: border-box; width: 56px; height: 40px; border-radius: {{r.css}}; background: #F2ECFF; border: 2px solid #7E36FC"></span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; line-height: 20px; font-weight: 800">{{r.name}}</span>
+<span style="font-size: 13px; line-height: 18px; font-weight: 500; color: #5A6880">{{r.use}}</span>
+</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-labelledby="t-space" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E2E8F0">
+<h2 id="t-space" style="margin: 0 0 4px; font-size: 20px; line-height: 28px; font-weight: 800">Отступы</h2>
+<sc-for list="{{spacing}}" as="s" hint-placeholder-count="8">
+<div style="display: grid; grid-template-columns: 72px 48px minmax(0, 1fr); column-gap: 12px; align-items: center">
+<span aria-hidden="true" style="display: block; height: 12px; width: {{s.px}}; border-radius: 3px; background: #7E36FC"></span>
+<span style="font-size: 14px; line-height: 20px; font-weight: 800; font-variant-numeric: tabular-nums">{{s.name}}</span>
+<span style="font-size: 13px; line-height: 18px; font-weight: 500; color: #5A6880">{{s.use}}</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-labelledby="t-controls" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E2E8F0">
+<h2 id="t-controls" style="margin: 0 0 4px; font-size: 20px; line-height: 28px; font-weight: 800">Размеры контролов</h2>
+<sc-for list="{{controls}}" as="c" hint-placeholder-count="6">
+<div style="box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: baseline; padding: 8px 0; border-top: 1px solid #E2E8F0">
+<span style="font-size: 14px; line-height: 20px; font-weight: 600">{{c.name}}</span>
+<span style="font-size: 13px; line-height: 18px; font-weight: 800; font-variant-numeric: tabular-nums; text-align: right">{{c.value}}</span>
+</div>
+</sc-for>
+<p style="margin: 4px 0 0; font-size: 13px; line-height: 18px; font-weight: 500; color: #5A6880">Тени: только у всплывающих элементов. Окно — 0 24 64 rgba(2, 6, 24, 0.24), подсказка и уведомление — 0 12 32 rgba(2, 6, 24, 0.16). Карточки без тени, с рамкой border/default.</p>
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: #5A6880">Анимация: смена цвета 120 мс, прогресс проверки 2,4 с. При prefers-reduced-motion переходы отключаются.</p>
+</section>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var L = {
+      bg: '#FFFFFF', border: '#E2E8F0', text: '#020618', muted: '#5A6880', swatchBorder: 'rgba(2, 6, 24, 0.12)',
+      successIcon: '#129A5A', dangerIcon: '#D92D3F', warningIcon: '#B86E00', glyph: '#FFFFFF',
+      accent: '#7E36FC', accentSubtle: '#F2ECFF', accentText: '#6A22E6', warning: '#8A5300', warningBg: '#FFF5D6', warningBorder: '#EBC35C',
+      hlNeutral: '#E6EBF3', hlWarn: '#FDE9AE'
+    };
+    var D = {
+      bg: '#0B0D14', border: '#2A3043', text: '#F3F4F8', muted: '#98A2B8', swatchBorder: 'rgba(255, 255, 255, 0.16)',
+      successIcon: '#3DBE7C', dangerIcon: '#F2606E', warningIcon: '#E2B33F', glyph: '#0B0D14',
+      accent: '#7E36FC', accentSubtle: '#251B41', accentText: '#BB98FF', warning: '#EEC152', warningBg: '#2A2211', warningBorder: '#6A5419',
+      hlNeutral: '#283047', hlWarn: '#4A3A12'
+    };
+    // [имя, назначение, светлая, контраст, тёмная, контраст]
+    var groups = [
+      ['Поверхности', [
+        ['bg/canvas', 'Фон страницы', '#F6F7FA', '', '#0B0D14', ''],
+        ['bg/surface', 'Карточки, поля, окна', '#FFFFFF', '', '#141722', ''],
+        ['bg/subtle', 'Подсказки, чипы, подложка переключателя', '#F1F4F8', '', '#1B1F2D', ''],
+        ['border/default', 'Рамки карточек и разделители', '#E2E8F0', '', '#2A3043', ''],
+        ['border/strong', 'Рамки полей ввода', '#7A889E', '3,6:1', '#6B7590', '3,9:1']
+      ]],
+      ['Текст', [
+        ['text/primary', 'Основной текст и заголовки', '#020618', '20,2:1', '#F3F4F8', '16,3:1'],
+        ['text/secondary', 'Второстепенный текст', '#45556C', '7,6:1', '#BAC2D3', '10,0:1'],
+        ['text/muted', 'Подписи, хлебные крошки', '#5A6880', '5,6:1', '#98A2B8', '7,0:1']
+      ]],
+      ['Акцент', [
+        ['accent/default', 'Основные кнопки, активные вкладки, выбранное', '#7E36FC', 'белый 5,5:1', '#7E36FC', 'белый 5,5:1'],
+        ['accent/hover', 'Нажатие основной кнопки', '#6C22EC', 'белый 6,8:1', '#6C22EC', 'белый 6,8:1'],
+        ['accent/subtle', 'Фон бейджей ИИ и правки куратора', '#F2ECFF', '', '#251B41', ''],
+        ['accent/text', 'Текст на accent/subtle', '#6A22E6', '6,1:1', '#BB98FF', '6,9:1'],
+        ['accent/link', 'Ссылки-кнопки', '#7E36FC', '5,5:1', '#BB98FF', '7,7:1']
+      ]],
+      ['Статусы', [
+        ['success/text', 'Засчитан, метка «уверен»', '#0B7A45', '5,4:1', '#4CCB8A', '8,7:1'],
+        ['success/icon', 'Круг с галочкой', '#129A5A', '3,6:1', '#3DBE7C', '7,5:1'],
+        ['danger/text', 'Не засчитан, ошибки, «Вернуть на доработку»', '#C2192E', '6,1:1', '#FF8A94', '7,9:1'],
+        ['danger/icon', 'Круг с крестиком', '#D92D3F', '4,8:1', '#F2606E', '5,7:1'],
+        ['warning/text', 'Спорно, текст на warning/bg', '#8A5300', '5,8:1', '#EEC152', '9,3:1'],
+        ['warning/icon', 'Круг с восклицательным знаком', '#B86E00', '4,0:1', '#E2B33F', '9,2:1'],
+        ['warning/bg', 'Жёлтый блок предупреждения', '#FFF5D6', '', '#2A2211', ''],
+        ['warning/border', 'Рамка жёлтого блока', '#EBC35C', '', '#6A5419', '']
+      ]],
+      ['Подсветка цитат', [
+        ['highlight/neutral', 'Цитата, по которой засчитан элемент', '#E6EBF3', 'текст 16,8:1', '#283047', 'текст 11,9:1'],
+        ['highlight/warn', 'Спорная цитата (с подчёркиванием)', '#FDE9AE', 'текст 16,7:1', '#4A3A12', 'текст 10,0:1']
+      ]]
+    ];
+    var mk = function (dark) {
+      return groups.map(function (g) {
+        return {
+          title: g[0],
+          items: g[1].map(function (t) {
+            return { name: t[0], use: t[1], hex: dark ? t[4] : t[2], ratio: dark ? t[5] : t[3] };
+          })
+        };
+      });
+    };
+    var panels = [
+      { title: 'Светлая тема', bg: L.bg, border: L.border, text: L.text, muted: L.muted, swatchBorder: L.swatchBorder, groups: mk(false) },
+      { title: 'Тёмная тема', bg: D.bg, border: D.border, text: D.text, muted: D.muted, swatchBorder: D.swatchBorder, groups: mk(true) }
+    ];
+    var statusPanels = [Object.assign({ title: 'Светлая тема' }, L), Object.assign({ title: 'Тёмная тема' }, D)];
+    var typeRows = [
+      ['2 из 3 баллов', 'Крупный итог', '32/40 · 800 · телефон 28/36', '32px', '40px', '800', '-0.02em'],
+      ['Результат проверки', 'Заголовок экрана', '28/36 · 800 · телефон 24/32, куратор 24/32', '28px', '36px', '800', '-0.02em'],
+      ['Комментарий', 'Подзаголовок секции', '18/26 · 800 · телефон 17/26', '18px', '26px', '800', '-0.01em'],
+      ['Ты объяснил, зачем закрывать устьица днём и что происходит ночью.', 'Основной текст, ученик', '16/26 · 500', '16px', '26px', '500', '0'],
+      ['Э1 · потеря воды днём', 'Плотный текст, куратор', '14/20–22 · 600', '14px', '22px', '600', '0'],
+      ['Исправить и отправить', 'Кнопка', '15/20 · 700 · телефон 16/20', '15px', '20px', '700', '0'],
+      ['Оспаривание рассмотрит другой куратор.', 'Мелкая подпись', '13/18 · 500–600', '13px', '18px', '500', '0'],
+      ['Проверено ИИ', 'Бейдж и метка', '12–13/16 · 700', '13px', '16px', '700', '0']
+    ];
+    var typeScale = typeRows.map(function (r, i) {
+      return { sample: r[0], name: r[1], spec: r[2], size: r[3], lh: r[4], weight: r[5], ls: r[6], divider: i === 0 ? 'transparent' : '#E2E8F0' };
+    });
+    var radii = [
+      { name: '8 px', css: '8px', use: 'Поля ввода, мелкие кнопки, образцы цвета' },
+      { name: '10 px', css: '10px', use: 'Кнопки, подсказки, жёлтый блок, строки эталона' },
+      { name: '12 px', css: '12px', use: 'Карточки, окно апелляции, сегментированный переключатель' },
+      { name: '999 px', css: '999px', use: 'Бейджи, вкладки-фильтры, переключатель' }
+    ];
+    var spacing = [
+      ['4', '4px', 'Подложка сегментов, между кнопками панели'],
+      ['8', '8px', 'Между бейджами, внутри поля'],
+      ['12', '12px', 'Между иконкой и текстом, поля ввода'],
+      ['16', '16px', 'Между карточками куратора, поля карточки на телефоне'],
+      ['20', '20px', 'Поля карточки куратора'],
+      ['24', '24px', 'Между блоками у ученика, поля карточки методиста'],
+      ['32', '32px', 'Поля карточки ученика на десктопе, боковые поля страницы'],
+      ['40', '40px', 'Верхний отступ страницы ученика и методиста']
+    ].map(function (s) { return { name: s[0], px: s[1], use: s[2] }; });
+    var controls = [
+      { name: 'Кнопка ученика и методиста', value: '40 · телефон 48' },
+      { name: 'Кнопка куратора', value: '36 · телефон 48' },
+      { name: 'Поле балла куратора', value: '32 · телефон 44' },
+      { name: 'Вкладка-фильтр очереди', value: '36 · телефон 44' },
+      { name: 'Сегмент режима проверки', value: '40 · телефон 44' },
+      { name: 'Иконочная кнопка, зона нажатия', value: '44 × 44' },
+      { name: 'Минимальная зона нажатия на телефоне', value: '44' }
+    ];
+    return { panels: panels, statusPanels: statusPanels, typeScale: typeScale, radii: radii, spacing: spacing, controls: controls };
+  }
+}
+</script>
+</body>
+</html>

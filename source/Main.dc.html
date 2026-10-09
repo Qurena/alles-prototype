@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Прототип ИИ-проверки домашних заданий</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="box-sizing: border-box; {{X.root}}">
+
+<sc-if value="{{chromeOn}}" hint-placeholder-val="{{ true }}">
+<div style="box-sizing: border-box; {{tbPos}}; z-index: 60; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 10px 20px; background: #0F1220; border-bottom: 1px solid #262B3D; color: #E8EAF2">
+<span style="font-size: 12px; line-height: 16px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #A9B0C4">Прототип</span>
+<div role="group" aria-label="Экран" style="display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: #1B1F30">
+<sc-for list="{{tbRoles}}" as="b" hint-placeholder-count="3"><button type="button" aria-pressed="{{b.on}}" onClick="{{b.pick}}" style="box-sizing: border-box; {{b.style}}">{{b.label}}</button></sc-for>
+</div>
+<sc-if value="{{isStudent}}" hint-placeholder-val="{{ true }}">
+<div role="group" aria-label="Состояние экрана ученика" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 10px; background: #1B1F30">
+<sc-for list="{{tbStates}}" as="b" hint-placeholder-count="4"><button type="button" aria-pressed="{{b.on}}" onClick="{{b.pick}}" style="box-sizing: border-box; {{b.style}}">{{b.label}}</button></sc-for>
+</div>
+</sc-if>
+<button type="button" onClick="{{onReset}}" style="box-sizing: border-box; {{tbReset}}">Сбросить сценарий</button>
+<a href="#tokens" style="box-sizing: border-box; {{tbReset}}; text-decoration: none">Токены</a>
+<div style="flex: 1 1 0; min-width: 0"></div>
+<div role="group" aria-label="Тема" style="display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: #1B1F30">
+<sc-for list="{{tbThemes}}" as="b" hint-placeholder-count="2"><button type="button" aria-pressed="{{b.on}}" onClick="{{b.pick}}" style="box-sizing: border-box; {{b.style}}">{{b.label}}</button></sc-for>
+</div>
+<div role="group" aria-label="Устройство" style="display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: #1B1F30">
+<sc-for list="{{tbDevices}}" as="b" hint-placeholder-count="2"><button type="button" aria-pressed="{{b.on}}" onClick="{{b.pick}}" style="box-sizing: border-box; {{b.style}}">{{b.label}}</button></sc-for>
+</div>
+</div>
+</sc-if>
+
+<div style="box-sizing: border-box; {{X.stage}}">
+<sc-if value="{{phoneStageLabel}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 600; color: {{T.muted}}">Телефон · 390 px</p></sc-if>
+<div style="box-sizing: border-box; {{X.frame}}">
+<div ref="{{scrollerRef}}" style="box-sizing: border-box; {{X.scroller}}">
+
+<header style="box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px; height: {{L.appBarH}}; padding: {{L.appBarPad}}; background: {{T.surface}}; border-bottom: 1px solid {{T.border}}">
+<div style="display: flex; align-items: baseline; gap: 12px; min-width: 0">
+<span style="font-size: 16px; line-height: 24px; font-weight: 800; letter-spacing: -0.01em; color: {{T.text}}; white-space: nowrap">ЭВОЛЮЦИЯ 2.0</span>
+<span style="font-size: 13px; line-height: 18px; font-weight: 600; color: {{T.muted}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{appSub}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 4px; flex: none">
+<button type="button" aria-label="Уведомления" style="box-sizing: border-box; {{S.iconBtn}}"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5.5 8.5a4.5 4.5 0 0 1 9 0c0 4.2 1.6 5.6 1.6 5.6H3.9s1.6-1.4 1.6-5.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M8.3 16.6a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></button>
+<span aria-hidden="true" style="box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 999px; background: {{T.accentSubtle}}; color: {{T.accentText}}; font-size: 13px; line-height: 16px; font-weight: 800">{{avatar}}</span>
+</div>
+</header>
+
+<main style="box-sizing: border-box; padding: {{mainPad}}">
+
+<sc-if value="{{isStudent}}" hint-placeholder-val="{{ true }}">
+<div style="box-sizing: border-box; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: {{L.stGap}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<nav aria-label="Хлебные крошки"><p style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: {{T.muted}}">ЭВОЛЮЦИЯ 2.0 · Модуль 3 · Задание 2: устьица растений пустынь</p></nav>
+<h1 style="margin: 0; {{L.h1}}; font-weight: 800; letter-spacing: -0.02em; color: {{T.text}}">{{studentTitle}}</h1>
+</div>
+
+<sc-if value="{{sResult}}" hint-placeholder-val="{{ true }}">
+<section aria-label="Результат проверки" style="box-sizing: border-box; {{S.card}}; padding: {{L.stCardPad}}; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; {{L.resHead}}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="box-sizing: border-box; {{S.badgeAI}}">Проверено ИИ · {{checkedAgo}}</span>
+<sc-if value="{{appealPending}}" hint-placeholder-val="{{ false }}"><span style="box-sizing: border-box; {{S.badgeNeutral}}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Апелляция на рассмотрении</span></sc-if>
+</div>
+<p style="margin: 0; {{L.display}}; font-weight: 800; letter-spacing: -0.02em; color: {{T.text}}; white-space: nowrap">2 из 3 баллов</p>
+</div>
+<div style="height: 1px; background: {{T.border}}"></div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px">
+<li style="display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; column-gap: 12px; align-items: start">
+<span role="img" aria-label="Засчитан" style="display: flex; padding-top: 1px"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="11" fill="{{T.successIcon}}"></circle><path d="M6.6 11.4l2.9 2.9 5.9-6.2" fill="none" stroke="{{T.glyph}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+<span style="font-size: {{L.bodyFs}}; line-height: 24px; font-weight: 600; color: {{T.text}}">Почему устьица не открываются днём</span>
+<span style="font-size: 16px; line-height: 24px; font-weight: 800; color: {{T.text}}; font-variant-numeric: tabular-nums">1/1</span>
+</li>
+<li style="display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; column-gap: 12px; align-items: start">
+<span role="img" aria-label="Засчитан" style="display: flex; padding-top: 1px"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="11" fill="{{T.successIcon}}"></circle><path d="M6.6 11.4l2.9 2.9 5.9-6.2" fill="none" stroke="{{T.glyph}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+<span style="font-size: {{L.bodyFs}}; line-height: 24px; font-weight: 600; color: {{T.text}}">Что происходит с CO₂ ночью</span>
+<span style="font-size: 16px; line-height: 24px; font-weight: 800; color: {{T.text}}; font-variant-numeric: tabular-nums">1/1</span>
+</li>
+<li style="display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; column-gap: 12px; align-items: start">
+<span role="img" aria-label="Не засчитан" style="display: flex; padding-top: 1px"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="11" fill="{{T.dangerIcon}}"></circle><path d="M7.8 7.8l6.4 6.4M14.2 7.8l-6.4 6.4" fill="none" stroke="{{T.glyph}}" stroke-width="2.2" stroke-linecap="round"></path></svg></span>
+<span style="font-size: {{L.bodyFs}}; line-height: 24px; font-weight: 800; color: {{T.text}}">Как растение использует CO₂ днём</span>
+<span style="font-size: 16px; line-height: 24px; font-weight: 800; color: {{T.danger}}; font-variant-numeric: tabular-nums">0/1</span>
+<p style="box-sizing: border-box; grid-column: 2 / 4; margin: 10px 0 0; padding: 10px 14px; border-radius: 10px; background: {{T.subtle}}; font-size: 15px; line-height: 22px; font-weight: 500; color: {{T.text2}}"><b style="font-weight: 800; color: {{T.text}}">Подсказка:</b> куда идёт запасённый ночью CO₂, когда становится светло?</p>
+</li>
+</ul>
+<div style="height: 1px; background: {{T.border}}"></div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="box-sizing: border-box; {{S.h2}}">Комментарий</h2>
+<p style="margin: 0; font-size: {{L.bodyFs}}; line-height: 26px; font-weight: 500; color: {{T.text}}">Ты объяснил, зачем закрывать устьица днём и что происходит ночью. Не хватает последнего шага — допиши его и отправь снова.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 4px">
+<div style="display: flex; {{L.resActions}}">
+<div style="display: flex; {{L.resActionsLeft}}">
+<button type="button" disabled="{{fixDisabled}}" onClick="{{onFix}}" style="box-sizing: border-box; {{fixBtnStyle}}">Исправить и отправить</button>
+<span style="font-size: 14px; line-height: 20px; font-weight: 600; color: {{T.muted}}">{{attemptsLeftText}}</span>
+</div>
+<button type="button" id="btn-disagree" disabled="{{appealPending}}" onClick="{{onDisagree}}" style="box-sizing: border-box; {{disagreeBtnStyle}}">Не согласен с оценкой</button>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: {{T.muted}}; text-align: {{L.footAlign}}">{{resultFootnote}}</p>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{sChecking}}" hint-placeholder-val="{{ false }}">
+<section aria-label="Статус проверки" style="box-sizing: border-box; {{S.card}}; padding: {{L.stCardPad}}; display: flex; flex-direction: column; gap: 20px">
+<div role="progressbar" aria-label="Проверка работы" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progress}}" style="box-sizing: border-box; height: 6px; border-radius: 999px; background: {{T.track}}; overflow: hidden">
+<div style="height: 100%; width: {{progressPct}}; border-radius: 999px; background: {{T.progress}}; {{progressTransition}}"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="box-sizing: border-box; {{S.h2}}">ИИ проверяет работу, обычно это 1–2 минуты</h2>
+<p style="margin: 0; font-size: {{L.bodyFs}}; line-height: 24px; font-weight: 500; color: {{T.text2}}">Можно закрыть страницу — пришлём уведомление, когда результат будет готов.</p>
+</div>
+</section>
+<section aria-label="Ваш ответ" style="box-sizing: border-box; {{S.card}}; overflow: hidden">
+<button type="button" aria-expanded="{{answerOpen}}" aria-controls="sent-answer" onClick="{{toggleAnswer}}" style="box-sizing: border-box; display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 0 {{L.stCardPadX}}; border: none; background: transparent; cursor: pointer; font-family: inherit; color: {{T.text}}; text-align: left">
+<span style="font-size: 16px; line-height: 24px; font-weight: 800">Ваш ответ</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.muted}}">{{answerToggleText}}<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" style="transform: rotate({{chevronRot}})"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<sc-if value="{{answerOpen}}" hint-placeholder-val="{{ false }}">
+<div id="sent-answer" style="box-sizing: border-box; padding: 16px {{L.stCardPadX}} 20px; border-top: 1px solid {{T.border}}">
+<p style="margin: 0; white-space: pre-wrap; font-size: {{L.bodyFs}}; line-height: 26px; font-weight: 500; color: {{T.text2}}">{{submitted}}</p>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{sRework}}" hint-placeholder-val="{{ false }}">
+<section aria-label="Условие задания" style="box-sizing: border-box; {{S.card}}; padding: {{L.stCardPad}}; display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.muted}}">Условие · максимум 3 балла</p>
+<p style="margin: 0; font-size: {{L.bodyFs}}; line-height: 26px; font-weight: 600; color: {{T.text}}">Почему многие растения пустынь открывают устьица ночью, а не днём? Объясните механизм.</p>
+</section>
+<section aria-label="Что не засчитано в прошлой попытке" style="box-sizing: border-box; {{S.card}}; padding: {{L.stCardPadSm}}; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.muted}}">Не засчитано в прошлой попытке</p>
+<div style="display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 12px; row-gap: 8px; align-items: start">
+<span role="img" aria-label="Не засчитан" style="display: flex; padding-top: 1px"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="11" fill="{{T.dangerIcon}}"></circle><path d="M7.8 7.8l6.4 6.4M14.2 7.8l-6.4 6.4" fill="none" stroke="{{T.glyph}}" stroke-width="2.2" stroke-linecap="round"></path></svg></span>
+<span style="font-size: {{L.bodyFs}}; line-height: 24px; font-weight: 800; color: {{T.text}}">Как растение использует CO₂ днём</span>
+<p style="box-sizing: border-box; grid-column: 2 / 3; margin: 0; padding: 10px 14px; border-radius: 10px; background: {{T.subtle}}; font-size: 15px; line-height: 22px; font-weight: 500; color: {{T.text2}}"><b style="font-weight: 800; color: {{T.text}}">Подсказка:</b> куда идёт запасённый ночью CO₂, когда становится светло?</p>
+</div>
+</section>
+<section aria-label="Ответ" style="box-sizing: border-box; {{S.card}}; padding: {{L.stCardPad}}; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px">
+<label for="rework-answer" style="box-sizing: border-box; {{S.h2}}">Ваш ответ</label>
+<span style="box-sizing: border-box; {{S.badgeNeutral}}">Попытка {{attemptNo}} из 3</span>
+</div>
+<textarea id="rework-answer" rows="8" value="{{draft}}" onChange="{{onDraft}}" style="box-sizing: border-box; {{S.textarea}}"></textarea>
+<div style="display: flex; {{L.resActions}}; padding-top: 8px">
+<div style="display: flex; {{L.resActionsLeft}}">
+<button type="button" disabled="{{submitDisabled}}" onClick="{{onSubmitWork}}" style="box-sizing: border-box; {{submitBtnStyle}}">Отправить на проверку</button>
+<span style="font-size: 14px; line-height: 20px; font-weight: 600; color: {{T.muted}}">Проверит ИИ, около 2 минут</span>
+</div>
+<button type="button" onClick="{{onCancelRework}}" style="box-sizing: border-box; {{S.btnSecondary}}">Отмена</button>
+</div>
+</section>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{isCurator}}" hint-placeholder-val="{{ false }}">
+<div style="box-sizing: border-box; max-width: 1376px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
+<h1 style="margin: 0; {{L.h1cur}}; font-weight: 800; letter-spacing: -0.02em; color: {{T.text}}">Очередь проверки</h1>
+<div role="tablist" aria-label="Фильтры очереди" style="box-sizing: border-box; display: flex; gap: 8px; {{L.tabsRow}}">
+<sc-for list="{{tabs}}" as="tb" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{tb.on}}" onClick="{{tb.pick}}" style="box-sizing: border-box; {{tb.style}}">{{tb.label}} · {{tb.count}}</button></sc-for>
+</div>
+<div onKeyDown="{{onCardKey}}" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<section aria-label="Работа ученика" style="box-sizing: border-box; {{S.card}}; padding: {{L.curCardPad}}; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<h2 style="margin: 0; font-size: 18px; line-height: 26px; font-weight: 800; color: {{T.text}}">{{W.student}}</h2>
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 600; color: {{T.muted}}">ЭВОЛЮЦИЯ 2.0 · Модуль 3 · Задание 2: устьица растений пустынь</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="box-sizing: border-box; {{S.chip}}">попытка {{W.attempt}}</span>
+<span style="box-sizing: border-box; {{S.chip}}">сдано {{W.time}}</span>
+</div>
+</div>
+<sc-if value="{{W.hasCtx}}" hint-placeholder-val="{{ false }}"><p style="box-sizing: border-box; margin: 0; display: flex; align-items: flex-start; gap: 8px; padding: 8px 12px; border-radius: 8px; background: {{T.subtle}}; font-size: 13px; line-height: 20px; font-weight: 600; color: {{T.text2}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" style="flex: none; margin-top: 2px"><circle cx="8" cy="8" r="6.4" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M8 7.2v4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path><circle cx="8" cy="4.9" r="1" fill="currentColor"></circle></svg><span>{{W.ctx}}</span></p></sc-if>
+</section>
+
+<div style="box-sizing: border-box; display: grid; grid-template-columns: {{L.curCols}}; gap: 16px; align-items: start">
+<section aria-labelledby="cur-answer-h" style="box-sizing: border-box; {{S.card}}; padding: {{L.curCardPad}}; display: flex; flex-direction: column; gap: 12px">
+<h3 id="cur-answer-h" style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 800; color: {{T.text}}">Ответ ученика</h3>
+<p style="margin: 0; font-size: 15px; line-height: 30px; font-weight: 500; color: {{T.text}}"><sc-for list="{{W.segments}}" as="seg" hint-placeholder-count="5"><sc-if value="{{seg.plain}}" hint-placeholder-val="{{ true }}">{{seg.t}}</sc-if><sc-if value="{{seg.hl}}" hint-placeholder-val="{{ false }}"><mark style="box-sizing: border-box; {{seg.markStyle}}">{{seg.t}}<span style="box-sizing: border-box; {{seg.tagStyle}}">{{seg.tag}}</span></mark></sc-if></sc-for></p>
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: {{T.muted}}">Подсвечены цитаты, по которым ИИ засчитал элементы</p>
+</section>
+
+<section aria-labelledby="cur-check-h" style="box-sizing: border-box; {{S.card}}; padding: {{L.curCardPad}}; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px">
+<h3 id="cur-check-h" style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 800; color: {{T.text}}">Проверка ИИ</h3>
+<p style="margin: 0; font-size: 14px; line-height: 20px; font-weight: 700; color: {{T.text2}}; font-variant-numeric: tabular-nums">ИИ: {{aiTotal}} / {{maxTotal}} → итог: {{curTotal}} / {{maxTotal}}</p>
+</div>
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{curEls}}" as="e" hint-placeholder-count="3">
+<div style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 10px 0; border-top: 1px solid {{T.border}}">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-width: 0">
+<label for="{{e.inputId}}" style="font-size: 14px; line-height: 20px; font-weight: {{e.nameWeight}}; color: {{T.text}}">{{e.code}} · {{e.name}}</label>
+<sc-if value="{{e.sure}}" hint-placeholder-val="{{ true }}"><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.success}}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.4l2.9 2.9 6-6.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>уверен</span></sc-if>
+<sc-if value="{{e.split}}" hint-placeholder-val="{{ false }}"><span style="box-sizing: border-box; {{S.badgeWarnSm}}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M8 4.8v3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><circle cx="8" cy="11.2" r="1" fill="currentColor"></circle></svg>{{e.confText}}</span></sc-if>
+<sc-if value="{{e.changed}}" hint-placeholder-val="{{ false }}"><span style="box-sizing: border-box; {{S.badgeChanged}}">изменено куратором</span></sc-if>
+</div>
+<input id="{{e.inputId}}" type="number" inputmode="numeric" min="0" max="{{e.max}}" step="1" value="{{e.cur}}" onChange="{{e.onChange}}" style="box-sizing: border-box; {{e.inputStyle}}">
+</div>
+<sc-if value="{{e.changed}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="{{e.selectId}}" style="font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.text2}}">Причина правки</label>
+<select id="{{e.selectId}}" value="{{e.reason}}" onChange="{{e.onReason}}" aria-invalid="{{e.reasonErr}}" style="box-sizing: border-box; {{e.selectStyle}}">
+<option value="" disabled="true">Выберите причину</option>
+<option value="missed">ИИ не увидел элемент</option>
+<option value="extra">{{e.extraLabel}}</option>
+<option value="alt">ответ верный, но его нет в эталоне</option>
+<option value="photo">ошибка распознавания фото</option>
+<option value="other">другое</option>
+</select>
+<sc-if value="{{e.reasonErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.danger}}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>Выберите причину правки</p></sc-if>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</div>
+
+<section aria-label="Комментарий и решение" style="box-sizing: border-box; {{S.card}}; padding: {{L.curCardPad}}; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<label for="cur-comment" style="font-size: 14px; line-height: 20px; font-weight: 800; color: {{T.text}}">Комментарий ученику</label>
+<span style="box-sizing: border-box; {{S.badgeAISm}}">Черновик ИИ</span>
+</div>
+<textarea id="cur-comment" rows="{{L.commentRows}}" value="{{comment}}" onChange="{{onComment}}" style="box-sizing: border-box; {{S.textareaDense}}"></textarea>
+<div style="display: flex; {{L.curActions}}; gap: 12px; padding-top: 6px">
+<sc-if value="{{W.canReturn}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{onReturn}}" style="box-sizing: border-box; {{S.btnDangerCur}}">Вернуть на доработку</button></sc-if>
+<div style="display: flex; {{L.curRight}}; gap: 16px">
+<sc-if value="{{L.kbdHint}}" hint-placeholder-val="{{ true }}"><span style="font-size: 13px; line-height: 18px; font-weight: 600; color: {{T.muted}}"><kbd style="box-sizing: border-box; display: inline-block; padding: 1px 6px; border-radius: 6px; border: 1px solid {{T.borderStrong}}; background: {{T.surface}}; font-family: inherit; font-size: 12px; line-height: 16px; font-weight: 800; color: {{T.text}}">Enter</kbd> — подтвердить и открыть следующую</span></sc-if>
+<button type="button" onClick="{{onConfirm}}" style="box-sizing: border-box; {{S.btnPrimaryCur}}">Подтвердить и отправить</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isMethodist}}" hint-placeholder-val="{{ false }}">
+<div style="box-sizing: border-box; max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px; padding-bottom: 8px">
+<nav aria-label="Хлебные крошки"><p style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: {{T.muted}}">ЭВОЛЮЦИЯ 2.0 · Модуль 3 · Задание 2: устьица растений пустынь</p></nav>
+<h1 style="margin: 0; {{L.h1}}; font-weight: 800; letter-spacing: -0.02em; color: {{T.text}}">Настройки ИИ-проверки</h1>
+</div>
+
+<section aria-labelledby="m-mode-h" style="box-sizing: border-box; {{S.card}}; padding: {{L.mCardPad}}; display: flex; flex-direction: column; gap: 16px">
+<h2 id="m-mode-h" style="box-sizing: border-box; {{S.h2}}">Режим проверки</h2>
+<div role="group" aria-labelledby="m-mode-h" style="box-sizing: border-box; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: {{T.subtle}}; border: 1px solid {{T.border}}; max-width: {{L.segMax}}">
+<button type="button" aria-pressed="{{modeOff}}" onClick="{{setModeOff}}" style="box-sizing: border-box; {{segOffStyle}}">Выключено</button>
+<button type="button" aria-pressed="{{modeAssist}}" onClick="{{setModeAssist}}" style="box-sizing: border-box; {{segAssistStyle}}">Помощник</button>
+<div style="position: relative; display: flex">
+<button type="button" aria-pressed="false" aria-disabled="true" aria-describedby="m-auto-tip" onClick="{{showTip}}" onMouseEnter="{{showTip}}" onMouseLeave="{{hideTip}}" onFocus="{{showTip}}" onBlur="{{hideTip}}" onKeyDown="{{tipKey}}" style="box-sizing: border-box; {{segAutoStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="3.5" y="7" width="9" height="6.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"></rect><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>Авто</button>
+<sc-if value="{{tip}}" hint-placeholder-val="{{ false }}"><div id="m-auto-tip" role="tooltip" style="box-sizing: border-box; position: absolute; top: calc(100% + 10px); right: 0; z-index: 20; width: {{L.tipW}}; padding: 10px 12px; border-radius: 10px; background: {{T.toastBg}}; color: {{T.toastText}}; font-size: 13px; line-height: 19px; font-weight: 600; box-shadow: {{T.shadowPop}}">«Авто» станет доступен, когда куратор проверит 50 работ этого задания и ИИ совпадёт с ним не менее чем в 90% случаев. Осталось проверить 13 работ.</div></sc-if>
+</div>
+</div>
+<div style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; max-width: {{L.segMax}}">
+<div role="progressbar" aria-label="Калибровка: проверено 37 из 50 работ" aria-valuemin="0" aria-valuemax="50" aria-valuenow="37" style="box-sizing: border-box; height: 6px; border-radius: 999px; background: {{T.track}}; overflow: hidden">
+<div style="width: 74%; height: 100%; border-radius: 999px; background: {{T.progress}}"></div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 20px; font-weight: 600; color: {{T.text2}}">«Авто» откроется после калибровки: проверено 37 из 50 работ, совпадение с куратором 92%</p>
+</div>
+</section>
+
+<section aria-labelledby="m-etalon-h" style="box-sizing: border-box; {{S.card}}; padding: {{L.mCardPad}}; display: flex; flex-direction: column; gap: 14px">
+<h2 id="m-etalon-h" style="box-sizing: border-box; {{S.h2}}">Эталон ответа · максимум {{maxPts}} {{maxPtsWord}}</h2>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{mEls}}" as="m" hint-placeholder-count="3">
+<li draggable="{{m.draggable}}" onDragStart="{{m.onDragStart}}" onDragOver="{{m.onDragOver}}" onDrop="{{m.onDrop}}" onDragEnd="{{m.onDragEnd}}" style="box-sizing: border-box; {{m.rowStyle}}">
+<div style="box-sizing: border-box; display: grid; {{L.mGrid}}; column-gap: 8px; row-gap: 8px; align-items: start">
+<button type="button" id="{{m.gripId}}" aria-label="{{m.gripLabel}}" onMouseDown="{{m.arm}}" onMouseUp="{{disarm}}" onKeyDown="{{m.onGripKey}}" style="box-sizing: border-box; grid-area: grip; {{S.grip}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="6" cy="4" r="1.3" fill="currentColor"></circle><circle cx="10" cy="4" r="1.3" fill="currentColor"></circle><circle cx="6" cy="8" r="1.3" fill="currentColor"></circle><circle cx="10" cy="8" r="1.3" fill="currentColor"></circle><circle cx="6" cy="12" r="1.3" fill="currentColor"></circle><circle cx="10" cy="12" r="1.3" fill="currentColor"></circle></svg></button>
+<div style="box-sizing: border-box; grid-area: text; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{m.editing}}" hint-placeholder-val="{{ false }}"><label for="{{m.textId}}" style="font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.text2}}">{{m.code}} · что должно быть в ответе</label><textarea id="{{m.textId}}" rows="2" value="{{m.text}}" onChange="{{m.onText}}" style="box-sizing: border-box; {{S.textareaDense}}"></textarea></sc-if>
+<sc-if value="{{m.view}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; padding-top: {{L.mTextPadTop}}; font-size: 15px; line-height: 22px; font-weight: 500; color: {{T.text}}"><b style="font-weight: 800">{{m.code}}</b> · {{m.text}}</p></sc-if>
+</div>
+<div style="box-sizing: border-box; grid-area: pts; display: flex; align-items: center; gap: 8px">
+<input type="number" inputmode="numeric" min="0" max="10" aria-label="{{m.ptsLabel}}" value="{{m.pts}}" onChange="{{m.onPts}}" onBlur="{{m.fixPts}}" style="box-sizing: border-box; {{S.numInput}}">
+<span style="font-size: 14px; line-height: 20px; font-weight: 600; color: {{T.text2}}; min-width: 48px">{{m.ptsWord}}</span>
+</div>
+<div style="box-sizing: border-box; grid-area: edit; display: flex; justify-content: flex-end">
+<sc-if value="{{m.view}}" hint-placeholder-val="{{ true }}"><button type="button" aria-label="{{m.editLabel}}" onClick="{{m.onEdit}}" style="box-sizing: border-box; {{S.iconBtnSm}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M10.8 2.8l2.4 2.4-7.6 7.6H3.2v-2.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg></button></sc-if>
+<sc-if value="{{m.editing}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{m.onDone}}" style="box-sizing: border-box; {{S.btnSmall}}">Готово</button></sc-if>
+</div>
+</div>
+<sc-if value="{{m.hasRules}}" hint-placeholder-val="{{ false }}">
+<div style="box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; {{L.mIndent}}">
+<sc-for list="{{m.rules}}" as="r" hint-placeholder-count="1">
+<div style="box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 8px; min-height: {{L.ruleH}}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0">
+<span style="font-size: 13px; line-height: 18px; font-weight: 800; color: {{r.kindColor}}">{{r.kindLabel}}</span>
+<sc-if value="{{r.editing}}" hint-placeholder-val="{{ false }}"><input type="text" id="{{r.inputId}}" value="{{r.text}}" onChange="{{r.onText}}" onBlur="{{r.onDone}}" onKeyDown="{{r.onKey}}" aria-label="{{r.aria}}" placeholder="{{r.placeholder}}" style="box-sizing: border-box; flex: 1 1 200px; min-width: 0; {{S.inputDense}}"></sc-if>
+<sc-if value="{{r.view}}" hint-placeholder-val="{{ true }}"><span style="flex: 1 1 auto; min-width: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: {{T.text2}}">{{r.text}}</span></sc-if>
+</div>
+<button type="button" aria-label="{{r.removeLabel}}" onClick="{{r.onRemove}}" style="box-sizing: border-box; {{S.iconBtnXs}}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<div style="box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 0 20px; {{L.mIndent}}">
+<button type="button" onClick="{{m.onAddAlt}}" style="box-sizing: border-box; {{S.link}}">+ допустимая формулировка</button>
+<button type="button" onClick="{{m.onAddErr}}" style="box-sizing: border-box; {{S.link}}">+ типичная ошибка</button>
+</div>
+</li>
+</sc-for>
+</ol>
+<div><button type="button" onClick="{{addElement}}" style="box-sizing: border-box; {{S.linkStrong}}">+ Добавить элемент</button></div>
+</section>
+
+<section aria-labelledby="m-extra-h" style="box-sizing: border-box; {{S.card}}; padding: {{L.mCardPad}}; display: flex; flex-direction: column">
+<h2 id="m-extra-h" style="box-sizing: border-box; {{S.h2}}; margin-bottom: 4px">Дополнительно</h2>
+<div style="box-sizing: border-box; {{S.settingRow}}; border-top: none">
+<span id="m-photo-label" style="box-sizing: border-box; {{S.settingLabel}}">Фото и рисунки: ИИ проверяет, куратор подтверждает</span>
+<button type="button" role="switch" aria-checked="{{photoAI}}" aria-labelledby="m-photo-label" onClick="{{togglePhoto}}" style="box-sizing: border-box; {{S.switchBtn}}"><span style="box-sizing: border-box; {{switchTrack}}"><span style="box-sizing: border-box; {{switchThumb}}"></span></span></button>
+</div>
+<div style="box-sizing: border-box; {{S.settingRow}}">
+<label for="m-attempts" style="box-sizing: border-box; {{S.settingLabel}}">Попыток в «Авто»</label>
+<div style="display: flex; align-items: center; gap: 8px; flex: none">
+<input id="m-attempts" type="number" inputmode="numeric" min="1" max="10" value="{{autoAttempts}}" onChange="{{onAttempts}}" onBlur="{{fixAttempts}}" style="box-sizing: border-box; {{S.numInput}}">
+<span style="display: inline-block; width: 16px"></span>
+</div>
+</div>
+<div style="box-sizing: border-box; {{S.settingRow}}">
+<label for="m-audit" style="box-sizing: border-box; {{S.settingLabel}}">Аудит работ из «Авто»</label>
+<div style="display: flex; align-items: center; gap: 8px; flex: none">
+<input id="m-audit" type="number" inputmode="numeric" min="0" max="100" value="{{auditPct}}" onChange="{{onAudit}}" onBlur="{{fixAudit}}" style="box-sizing: border-box; {{S.numInput}}">
+<span style="display: inline-block; width: 16px; font-size: 15px; line-height: 20px; font-weight: 700; color: {{T.text2}}">%</span>
+</div>
+</div>
+<div style="box-sizing: border-box; {{S.settingRow}}">
+<label for="m-rollback" style="box-sizing: border-box; {{S.settingLabel}}">Порог автоотката</label>
+<div style="display: flex; align-items: center; gap: 8px; flex: none">
+<input id="m-rollback" type="number" inputmode="numeric" min="0" max="100" value="{{rollbackPct}}" onChange="{{onRollback}}" onBlur="{{fixRollback}}" style="box-sizing: border-box; {{S.numInput}}">
+<span style="display: inline-block; width: 16px; font-size: 15px; line-height: 20px; font-weight: 700; color: {{T.text2}}">%</span>
+</div>
+</div>
+</section>
+
+<div style="box-sizing: border-box; display: flex; {{L.mFooter}}; gap: 16px; padding-top: 4px">
+<p style="margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: {{T.muted}}">Смена режима действует для новых сдач; работы в очереди доводятся в старом режиме.</p>
+<button type="button" onClick="{{onSave}}" style="box-sizing: border-box; {{S.btnPrimary}}">Сохранить</button>
+</div>
+</div>
+</sc-if>
+
+</main>
+</div>
+
+<sc-if value="{{dialogOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{onOverlayClick}}" style="box-sizing: border-box; position: {{X.overlayPos}}; top: 0; right: 0; bottom: 0; left: 0; z-index: 40; display: flex; justify-content: center; {{L.dlgOuter}}; background: {{T.scrim}}">
+<div role="dialog" aria-modal="true" aria-labelledby="appeal-title" onKeyDown="{{onDialogKey}}" style="box-sizing: border-box; width: 100%; max-width: {{L.dlgMax}}; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: {{L.dlgPad}}; background: {{T.surface}}; border-radius: {{L.dlgRadius}}; box-shadow: {{T.shadowModal}}; font-family: {{F}}">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+<h2 id="appeal-title" style="margin: 0; {{L.h2dlg}}; font-weight: 800; letter-spacing: -0.01em; color: {{T.text}}">Отправить работу на перепроверку?</h2>
+<button type="button" aria-label="Закрыть" onClick="{{onAppealCancel}}" style="box-sizing: border-box; {{S.iconBtn}}; margin: -8px -10px 0 0"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="appeal-reason" style="font-size: 14px; line-height: 20px; font-weight: 800; color: {{T.text}}">С чем вы не согласны? <span aria-hidden="true" style="color: {{T.danger}}">*</span></label>
+<textarea id="appeal-reason" rows="4" aria-required="true" aria-invalid="{{appealError}}" aria-describedby="appeal-error" placeholder="Например: я описал, что происходит днём, во втором абзаце" value="{{appealText}}" onChange="{{onAppealText}}" style="box-sizing: border-box; {{appealFieldStyle}}"></textarea>
+<sc-if value="{{appealError}}" hint-placeholder-val="{{ false }}"><p id="appeal-error" role="alert" style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 700; color: {{T.danger}}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>Напишите, с чем вы не согласны</p></sc-if>
+</div>
+<div role="note" style="box-sizing: border-box; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: {{T.warningBg}}; border: 1px solid {{T.warningBorder}}">
+<svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true" focusable="false" style="flex: none; margin-top: 1px"><circle cx="11" cy="11" r="11" fill="{{T.warningIcon}}"></circle><path d="M11 6.2v6.2" fill="none" stroke="{{T.glyph}}" stroke-width="2.4" stroke-linecap="round"></path><circle cx="11" cy="15.8" r="1.4" fill="{{T.glyph}}"></circle></svg>
+<p style="margin: 0; font-size: 14px; line-height: 21px; font-weight: 600; color: {{T.text}}">Работу проверит другой куратор. Как на олимпиаде, балл может как повыситься, так и понизиться. Решение по апелляции окончательное.</p>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: {{T.muted}}">Оспорить можно один раз, в течение 7 дней. Пока идёт апелляция, пересдача недоступна.</p>
+<div style="display: flex; {{L.dlgActions}}; gap: 8px; padding-top: 4px">
+<button type="button" onClick="{{onAppealCancel}}" style="box-sizing: border-box; {{S.btnSecondary}}">Отмена</button>
+<button type="button" onClick="{{onAppealSubmit}}" style="box-sizing: border-box; {{S.btnPrimary}}">Отправить на перепроверку</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<div role="status" aria-live="polite" style="box-sizing: border-box; position: {{X.overlayPos}}; left: 0; right: 0; bottom: 24px; z-index: 50; display: flex; justify-content: center; padding: 0 16px; pointer-events: none">
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}"><div style="box-sizing: border-box; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 16px; border-radius: 10px; background: {{T.toastBg}}; color: {{T.toastText}}; font-size: 14px; line-height: 20px; font-weight: 700; box-shadow: {{T.shadowPop}}"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true" focusable="false" style="color: {{T.toastIcon}}"><path d="M3.5 8.4l2.9 2.9 6-6.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>{{toast}}</div></sc-if>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"screen":{"editor":"enum","options":["result","checking","appeal","appeal-sent","rework","curator","methodist"],"default":"result","section":"Прототип"},"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Прототип"},"device":{"editor":"enum","options":["desktop","phone"],"default":"desktop","section":"Прототип"},"chrome":{"editor":"enum","options":["on","off"],"default":"on","section":"Прототип"},"frameH":{"editor":null},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(...args) {
+    super(...args);
+    this.K = this.constants();
+    this.timers = [];
+    this.toastTimer = null;
+    this.pendingFocus = null;
+    this.scrollerEl = null;
+    this.reduceMotion = false;
+    try { this.reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (err) { this.reduceMotion = false; }
+    // Открыто на настоящем телефоне: телефонная раскладка на весь экран, без рамки устройства
+    this.narrow = false;
+    try { this.narrow = window.innerWidth < 600; } catch (err) { this.narrow = false; }
+    this.scrollerRef = (el) => { this.scrollerEl = el; };
+    this.state = this.seed(this.props || args[0] || {});
+  }
+
+  constants() {
+    return {
+      font: "'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif",
+      themes: {
+        light: {
+          canvas: '#F6F7FA', surface: '#FFFFFF', subtle: '#F1F4F8', track: '#E4E8EF', border: '#E2E8F0', borderStrong: '#7A889E',
+          text: '#020618', text2: '#45556C', muted: '#5A6880',
+          accent: '#7E36FC', accentHover: '#6C22EC', accentSubtle: '#F2ECFF', accentText: '#6A22E6', link: '#7E36FC', onAccent: '#FFFFFF', progress: '#7E36FC',
+          success: '#0B7A45', successIcon: '#129A5A', successBg: '#E9F7EF',
+          danger: '#C2192E', dangerIcon: '#D92D3F', dangerBg: '#FDEEEF',
+          warning: '#8A5300', warningIcon: '#B86E00', warningBg: '#FFF5D6', warningBorder: '#EBC35C',
+          glyph: '#FFFFFF', hlNeutral: '#E6EBF3', hlWarn: '#FDE9AE',
+          disabledBg: '#E7EBF1', disabledText: '#7D889B',
+          scrim: 'rgba(2, 6, 24, 0.48)', shadowPop: '0 12px 32px rgba(2, 6, 24, 0.16)', shadowModal: '0 24px 64px rgba(2, 6, 24, 0.24)', shadowDevice: '0 20px 60px rgba(2, 6, 24, 0.16)',
+          toastBg: '#141722', toastText: '#F3F4F8', toastIcon: '#4CCB8A', stage: '#E4E7EE'
+        },
+        dark: {
+          canvas: '#0B0D14', surface: '#141722', subtle: '#1B1F2D', track: '#2A3043', border: '#2A3043', borderStrong: '#6B7590',
+          text: '#F3F4F8', text2: '#BAC2D3', muted: '#98A2B8',
+          accent: '#7E36FC', accentHover: '#6C22EC', accentSubtle: '#251B41', accentText: '#BB98FF', link: '#BB98FF', onAccent: '#FFFFFF', progress: '#BB98FF',
+          success: '#4CCB8A', successIcon: '#3DBE7C', successBg: '#11261C',
+          danger: '#FF8A94', dangerIcon: '#F2606E', dangerBg: '#2C1519',
+          warning: '#EEC152', warningIcon: '#E2B33F', warningBg: '#2A2211', warningBorder: '#6A5419',
+          glyph: '#0B0D14', hlNeutral: '#283047', hlWarn: '#4A3A12',
+          disabledBg: '#232838', disabledText: '#7A8399',
+          scrim: 'rgba(0, 0, 0, 0.6)', shadowPop: '0 12px 32px rgba(0, 0, 0, 0.5)', shadowModal: '0 24px 64px rgba(0, 0, 0, 0.6)', shadowDevice: '0 20px 60px rgba(0, 0, 0, 0.6)',
+          toastBg: '#F3F4F8', toastText: '#020618', toastIcon: '#0B7A45', stage: '#05060A'
+        }
+      },
+      answer: 'Днём в пустыне очень жарко, и через открытые устьица испарялось бы слишком много воды, поэтому днём они закрыты. Ночью устьица открываются, и углекислый газ запасается в клетках в виде органических кислот. Днём растение фотосинтезирует.',
+      tabs: [
+        { id: 'confirm', label: 'Подтвердить ИИ' },
+        { id: 'need', label: 'Нужен куратор' },
+        { id: 'audit', label: 'Аудит' },
+        { id: 'appeal', label: 'Апелляции' }
+      ],
+      works: {
+        confirm: [
+          {
+            student: 'Ольга С.', attempt: 1, time: 'сегодня в 14:32',
+            segs: [
+              ['Растения пустынь закрывают устьица днём, потому что '],
+              ['днём бы испарялось слишком много воды.', 'Э1'],
+              [' '],
+              ['Ночью углекислый газ запасается в виде кислот', 'Э2'],
+              [' в клетках. '],
+              ['А днём растение просто фотосинтезирует.', 'Э3', 'warn']
+            ],
+            els: [
+              { code: 'Э1', name: 'потеря воды днём', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э2', name: 'CO₂ ночью в кислоты', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э3', name: 'CO₂ днём на фотосинтез', ai: 1, max: 1, conf: 'split', confText: 'ИИ дал 1, прогоны разошлись' }
+            ],
+            init: { 2: { cur: 0, reason: 'extra', note: 'механизм не назван' } },
+            comment: 'Ты объяснил, зачем закрывать устьица днём и что происходит ночью. Не хватает последнего шага.'
+          },
+          {
+            student: 'Михаил К.', attempt: 2, time: 'сегодня в 14:41',
+            segs: [
+              ['Днём устьица закрыты, чтобы не терять воду: '],
+              ['при открытых устьицах в жару растение испаряло бы слишком много воды.', 'Э1'],
+              [' Ночью устьица открываются, '],
+              ['CO₂ поступает в лист и связывается в органические кислоты, которые запасаются в вакуолях.', 'Э2'],
+              [' Днём '],
+              ['кислоты распадаются, CO₂ высвобождается и идёт на фотосинтез.', 'Э3']
+            ],
+            els: [
+              { code: 'Э1', name: 'потеря воды днём', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э2', name: 'CO₂ ночью в кислоты', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э3', name: 'CO₂ днём на фотосинтез', ai: 1, max: 1, conf: 'sure' }
+            ],
+            comment: 'Ты описал все три шага: зачем закрывать устьица днём, как CO₂ запасается ночью и куда он идёт днём.'
+          },
+          {
+            student: 'Дарья П.', attempt: 1, time: 'сегодня в 14:58',
+            segs: [
+              ['Днём устьица закрыты, потому что '],
+              ['так растение теряет меньше воды.', 'Э1'],
+              [' Ночью растение запасает углекислый газ. '],
+              ['Днём этот газ используется для фотосинтеза.', 'Э3']
+            ],
+            els: [
+              { code: 'Э1', name: 'потеря воды днём', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э2', name: 'CO₂ ночью в кислоты', ai: 0, max: 1, conf: 'sure' },
+              { code: 'Э3', name: 'CO₂ днём на фотосинтез', ai: 1, max: 1, conf: 'sure' }
+            ],
+            comment: 'Ты объяснил, зачем закрывать устьица днём и куда идёт CO₂ днём. Уточни, в каком виде растение запасает CO₂ ночью.'
+          }
+        ],
+        need: [
+          {
+            student: 'Иван Д.', attempt: 1, time: 'сегодня в 13:15', ctx: 'Нужен куратор: прогоны ИИ разошлись по Э2',
+            segs: [
+              ['Днём устьица закрыты, '],
+              ['иначе растение потеряет слишком много воды.', 'Э1'],
+              [' '],
+              ['У этих растений CAM-фотосинтез.', 'Э2', 'warn'],
+              [' '],
+              ['Днём углекислый газ из запасов идёт на фотосинтез.', 'Э3']
+            ],
+            els: [
+              { code: 'Э1', name: 'потеря воды днём', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э2', name: 'CO₂ ночью в кислоты', ai: 0, max: 1, conf: 'split', confText: 'ИИ дал 0, прогоны разошлись' },
+              { code: 'Э3', name: 'CO₂ днём на фотосинтез', ai: 1, max: 1, conf: 'sure' }
+            ],
+            comment: 'Ты объяснил, зачем закрывать устьица днём и куда идёт CO₂ днём. Опиши, что происходит ночью, а не только название процесса.'
+          }
+        ],
+        audit: [
+          {
+            student: 'Полина Р.', attempt: 1, time: 'вчера в 19:04', ctx: 'Аудит: работа из «Авто», результат уже у ученика',
+            segs: [
+              ['Если бы устьица были открыты днём, '],
+              ['растение потеряло бы много воды через испарение.', 'Э1'],
+              [' Поэтому они открываются ночью: '],
+              ['CO₂ связывается в органические кислоты и запасается в вакуолях.', 'Э2'],
+              [' Днём '],
+              ['из этих кислот выделяется CO₂ и используется в фотосинтезе.', 'Э3']
+            ],
+            els: [
+              { code: 'Э1', name: 'потеря воды днём', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э2', name: 'CO₂ ночью в кислоты', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э3', name: 'CO₂ днём на фотосинтез', ai: 1, max: 1, conf: 'sure' }
+            ],
+            comment: 'Ты описал все три шага механизма: зачем закрывать устьица днём, что происходит с CO₂ ночью и куда он идёт днём.'
+          }
+        ],
+        appeal: [
+          {
+            student: 'Артём Н.', attempt: 1, time: '7 октября в 18:20', ctx: 'Апелляция, комментарий ученика: «Я описал, что происходит днём, в последнем предложении»',
+            segs: [
+              ['Днём в пустыне очень жарко, и '],
+              ['через открытые устьица испарялось бы слишком много воды', 'Э1'],
+              [', поэтому днём они закрыты. Ночью устьица открываются, и '],
+              ['углекислый газ запасается в клетках в виде органических кислот.', 'Э2'],
+              [' Днём растение фотосинтезирует.']
+            ],
+            els: [
+              { code: 'Э1', name: 'потеря воды днём', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э2', name: 'CO₂ ночью в кислоты', ai: 1, max: 1, conf: 'sure' },
+              { code: 'Э3', name: 'CO₂ днём на фотосинтез', ai: 0, max: 1, conf: 'sure' }
+            ],
+            comment: 'Ты объяснил, зачем закрывать устьица днём и что происходит ночью. Не хватает последнего шага — допиши его и отправь снова.'
+          }
+        ]
+      },
+      mEls: [
+        { id: 'e1', text: 'Днём открытые устьица привели бы к большой потере воды', pts: '1', rules: [], editing: false },
+        { id: 'e2', text: 'Ночью CO₂ связывается в органические кислоты и запасается', pts: '1', rules: [{ id: 'r1', kind: 'err', text: '«CAM-фотосинтез» без описания механизма', editing: false }], editing: false },
+        { id: 'e3', text: 'Днём CO₂ высвобождается из кислот и идёт на фотосинтез', pts: '1', rules: [], editing: false }
+      ]
+    };
+  }
+
+  plural(n, forms) {
+    var a = Math.abs(n) % 100;
+    var b = a % 10;
+    if (a > 10 && a < 20) return forms[2];
+    if (b > 1 && b < 5) return forms[1];
+    if (b === 1) return forms[0];
+    return forms[2];
+  }
+
+  isStatic() {
+    return this.props && this.props.chrome === 'off';
+  }
+
+  seed(p) {
+    var K = this.K;
+    var screen = (p && p.screen) || 'result';
+    var s = {
+      theme: p && p.theme === 'dark' ? 'dark' : 'light',
+      device: p && (p.device === 'phone' || (!p.device && this.narrow)) ? 'phone' : 'desktop',
+      role: 'student',
+      sScreen: 'result', dialogOpen: false, appealText: '', appealError: false, appealPending: false,
+      attemptsUsed: 1, checkedAgo: '2 мин назад', answerOpen: false, draft: K.answer, submitted: K.answer, progress: 0,
+      tab: 'confirm', qIdx: { confirm: 0, need: 0, audit: 0, appeal: 0 }, counts: { confirm: 12, need: 5, audit: 4, appeal: 3 },
+      toast: '',
+      mode: 'assist', tip: false, mEls: JSON.parse(JSON.stringify(K.mEls)), photoAI: true,
+      autoAttempts: '3', auditPct: '10', rollbackPct: '85',
+      armed: null, dragId: null, overId: null, nextId: 100
+    };
+    if (screen === 'checking') { s.sScreen = 'checking'; s.progress = 46; }
+    else if (screen === 'appeal') { s.dialogOpen = true; }
+    else if (screen === 'appeal-sent') { s.appealPending = true; }
+    else if (screen === 'rework') { s.sScreen = 'rework'; }
+    else if (screen === 'curator') { s.role = 'curator'; }
+    else if (screen === 'methodist') { s.role = 'methodist'; }
+    var w = this.workState('confirm', 0);
+    s.edits = w.edits;
+    s.comment = w.comment;
+    s.reasonError = false;
+    return s;
+  }
+
+  workState(tab, idx) {
+    var work = this.K.works[tab][idx];
+    var edits = work.els.map(function (e, i) {
+      var init = work.init && work.init[i];
+      if (init) return { cur: init.cur, reason: init.reason, note: init.note };
+      return { cur: e.ai, reason: '', note: '' };
+    });
+    return { edits: edits, comment: work.comment };
+  }
+
+  componentDidMount() {
+    if (!this.isStatic() && this.state.role === 'student' && this.state.sScreen === 'checking') this.runChecking();
+    var self = this;
+    this.onResize = function () {
+      var narrow = window.innerWidth < 600;
+      if (narrow !== self.narrow) { self.narrow = narrow; self.forceUpdate(); }
+    };
+    try { window.addEventListener('resize', this.onResize); } catch (err) { }
+  }
+
+  componentDidUpdate(prevProps) {
+    var p = this.props || {};
+    var q = prevProps || {};
+    if (q.screen !== p.screen || q.theme !== p.theme || q.device !== p.device || q.chrome !== p.chrome) {
+      this.clearTimers();
+      var self = this;
+      this.setState(this.seed(p), function () {
+        if (!self.isStatic() && self.state.sScreen === 'checking') self.runChecking();
+      });
+      return;
+    }
+    if (this.pendingFocus && !this.isStatic()) {
+      var id = this.pendingFocus;
+      this.pendingFocus = null;
+      var el = document.getElementById(id);
+      if (el && el.focus) el.focus();
+    }
+  }
+
+  componentWillUnmount() {
+    this.clearTimers();
+    if (this.onResize) { try { window.removeEventListener('resize', this.onResize); } catch (err) { } }
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+  }
+
+  clearTimers() {
+    this.timers.forEach(function (t) { clearTimeout(t); });
+    this.timers = [];
+  }
+
+  runChecking() {
+    var self = this;
+    this.clearTimers();
+    this.setState({ progress: this.reduceMotion ? 60 : 6 });
+    if (!this.reduceMotion) this.timers.push(setTimeout(function () { self.setState({ progress: 94 }); }, 80));
+    this.timers.push(setTimeout(function () { self.setState({ sScreen: 'result', progress: 0 }); }, 2600));
+  }
+
+  showToast(msg) {
+    if (this.isStatic()) return;
+    var self = this;
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.setState({ toast: msg });
+    this.toastTimer = setTimeout(function () { self.setState({ toast: '' }); }, 2800);
+  }
+
+  scrollTop() {
+    if (this.isStatic()) return;
+    if (this.state.device === 'phone' && !this.narrow && this.scrollerEl) { this.scrollerEl.scrollTop = 0; return; }
+    try { window.scrollTo(0, 0); } catch (err) { }
+  }
+
+  // Ученик
+  jump(k) {
+    var st = this.state;
+    this.clearTimers();
+    var next = { role: 'student', dialogOpen: false, appealError: false, tip: false };
+    if (k === 'result') next.sScreen = 'result';
+    if (k === 'checking') next.sScreen = 'checking';
+    if (k === 'appeal') { next.sScreen = 'result'; next.dialogOpen = true; next.appealPending = false; this.pendingFocus = 'appeal-reason'; }
+    if (k === 'rework') { next.sScreen = 'rework'; next.draft = st.submitted; next.appealPending = false; if (st.attemptsUsed >= 3) next.attemptsUsed = 1; }
+    this.setState(next);
+    if (k === 'checking') this.runChecking();
+    this.scrollTop();
+  }
+
+  submitWork() {
+    var st = this.state;
+    if (!st.draft.trim()) return;
+    this.setState({ attemptsUsed: Math.min(3, st.attemptsUsed + 1), submitted: st.draft, checkedAgo: 'только что', sScreen: 'checking', answerOpen: false });
+    this.scrollTop();
+    if (!this.isStatic()) this.runChecking();
+  }
+
+  appealSubmit() {
+    var st = this.state;
+    if (!st.appealText.trim()) {
+      this.pendingFocus = 'appeal-reason';
+      this.setState({ appealError: true });
+      return;
+    }
+    this.setState({ dialogOpen: false, appealPending: true, appealError: false });
+  }
+
+  appealCancel() {
+    this.pendingFocus = 'btn-disagree';
+    this.setState({ dialogOpen: false, appealError: false });
+  }
+
+  // Куратор
+  currentWork() {
+    var st = this.state;
+    return this.K.works[st.tab][st.qIdx[st.tab]];
+  }
+
+  pickTab(id) {
+    var w = this.workState(id, this.state.qIdx[id]);
+    this.setState({ tab: id, edits: w.edits, comment: w.comment, reasonError: false });
+  }
+
+  setScore(i, raw) {
+    var el = this.currentWork().els[i];
+    var edits = this.state.edits.map(function (x) { return { cur: x.cur, reason: x.reason, note: x.note }; });
+    var v = raw === '' ? '' : Math.max(0, Math.min(el.max, parseInt(raw, 10) || 0));
+    edits[i].cur = v;
+    if (v === el.ai) { edits[i].reason = ''; edits[i].note = ''; }
+    this.setState({ edits: edits, reasonError: false });
+  }
+
+  setReason(i, val) {
+    var edits = this.state.edits.map(function (x) { return { cur: x.cur, reason: x.reason, note: x.note }; });
+    edits[i].reason = val;
+    edits[i].note = '';
+    this.setState({ edits: edits });
+  }
+
+  advance(msg) {
+    var st = this.state;
+    var tab = st.tab;
+    var list = this.K.works[tab];
+    var qIdx = Object.assign({}, st.qIdx);
+    qIdx[tab] = (qIdx[tab] + 1) % list.length;
+    var counts = Object.assign({}, st.counts);
+    counts[tab] = Math.max(0, counts[tab] - 1);
+    var w = this.workState(tab, qIdx[tab]);
+    this.setState({ qIdx: qIdx, counts: counts, edits: w.edits, comment: w.comment, reasonError: false });
+    this.showToast(msg);
+    this.scrollTop();
+  }
+
+  confirmWork() {
+    var st = this.state;
+    var missing = this.currentWork().els.some(function (el, i) {
+      var ed = st.edits[i];
+      return ed.cur !== '' && ed.cur !== el.ai && !ed.reason;
+    });
+    if (missing) { this.setState({ reasonError: true }); return; }
+    this.advance('Отправлено ученику');
+  }
+
+  // Методист
+  updEl(id, fn) {
+    var mEls = this.state.mEls.map(function (m) {
+      if (m.id !== id) return m;
+      var c = JSON.parse(JSON.stringify(m));
+      fn(c);
+      return c;
+    });
+    this.setState({ mEls: mEls });
+  }
+
+  elDone(id) {
+    var m = this.state.mEls.filter(function (x) { return x.id === id; })[0];
+    if (!m) return;
+    if (!m.text.trim()) { this.setState({ mEls: this.state.mEls.filter(function (x) { return x.id !== id; }) }); return; }
+    this.updEl(id, function (c) { c.editing = false; });
+  }
+
+  addRule(id, kind) {
+    var st = this.state;
+    var rid = 'r' + st.nextId;
+    var mEls = st.mEls.map(function (m) {
+      if (m.id !== id) return m;
+      var c = JSON.parse(JSON.stringify(m));
+      c.rules.push({ id: rid, kind: kind, text: '', editing: true });
+      return c;
+    });
+    this.pendingFocus = 'rule-' + rid;
+    this.setState({ mEls: mEls, nextId: st.nextId + 1 });
+  }
+
+  ruleDone(id, rid) {
+    this.updEl(id, function (c) {
+      c.rules = c.rules.filter(function (r) { return r.id !== rid || r.text.trim(); }).map(function (r) {
+        if (r.id === rid) r.editing = false;
+        return r;
+      });
+    });
+  }
+
+  addElement() {
+    var st = this.state;
+    var eid = 'e' + st.nextId;
+    this.pendingFocus = 'm-text-' + eid;
+    this.setState({ mEls: st.mEls.concat([{ id: eid, text: '', pts: '1', rules: [], editing: true }]), nextId: st.nextId + 1 });
+  }
+
+  moveEl(id, delta) {
+    var arr = this.state.mEls.slice();
+    var i = arr.findIndex(function (m) { return m.id === id; });
+    var j = i + delta;
+    if (i < 0 || j < 0 || j >= arr.length) return;
+    var item = arr.splice(i, 1)[0];
+    arr.splice(j, 0, item);
+    this.pendingFocus = 'grip-' + id;
+    this.setState({ mEls: arr });
+  }
+
+  dropOn(toId) {
+    var st = this.state;
+    var fromId = st.dragId;
+    var arr = st.mEls.slice();
+    var fi = arr.findIndex(function (m) { return m.id === fromId; });
+    var ti = arr.findIndex(function (m) { return m.id === toId; });
+    if (fi >= 0 && ti >= 0 && fi !== ti) {
+      var item = arr.splice(fi, 1)[0];
+      arr.splice(ti, 0, item);
+    }
+    this.setState({ mEls: arr, dragId: null, overId: null, armed: null });
+  }
+
+  clampField(key, min, max, fallback) {
+    var v = parseInt(this.state[key], 10);
+    if (isNaN(v)) v = fallback;
+    v = Math.max(min, Math.min(max, v));
+    var next = {};
+    next[key] = String(v);
+    this.setState(next);
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var K = this.K;
+    var F = K.font;
+    var T = K.themes[st.theme] || K.themes.light;
+    var isPhone = st.device === 'phone';
+    var isStatic = this.isStatic();
+    var chromeOn = !isStatic;
+    var frameH = parseInt(this.props && this.props.frameH, 10) || (isPhone ? 844 : 1024);
+    var motion = this.reduceMotion;
+    var plural = this.plural;
+
+    // Обёртки: панель прототипа, сцена устройства, статичный кадр
+    var framed = chromeOn && isPhone && !this.narrow;
+    var X = {
+      root: chromeOn
+        ? 'min-height: 100vh; background: ' + (framed ? T.stage : T.canvas) + '; font-family: ' + F + '; color: ' + T.text + '; color-scheme: ' + st.theme + '; -webkit-font-smoothing: antialiased'
+        : 'width: ' + (isPhone ? 390 : 1440) + 'px; height: ' + frameH + 'px; position: relative; overflow: hidden; background: ' + T.canvas + '; font-family: ' + F + '; color: ' + T.text + '; color-scheme: ' + st.theme + '; -webkit-font-smoothing: antialiased',
+      stage: framed ?'display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 28px 16px 64px' : 'display: block',
+      frame: framed
+        ? 'position: relative; width: 390px; max-width: 100%; height: 844px; flex: none; overflow: hidden; border-radius: 28px; border: 1px solid ' + T.border + '; background: ' + T.canvas + '; box-shadow: ' + T.shadowDevice
+        : 'position: relative' + (chromeOn ? '' : '; height: ' + frameH + 'px; overflow: hidden; background: ' + T.canvas),
+      scroller: framed
+        ? 'position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow-y: auto; background: ' + T.canvas
+        : 'position: relative; background: ' + T.canvas,
+      overlayPos: chromeOn && !framed ? 'fixed' : 'absolute'
+    };
+
+    var L = isPhone ? {
+      appBarH: '56px', appBarPad: '0 8px 0 16px', bodyFs: '16px',
+      h1: 'font-size: 24px; line-height: 32px', h1cur: 'font-size: 22px; line-height: 30px', display: 'font-size: 28px; line-height: 36px',
+      stGap: '20px', stCardPad: '20px', stCardPadX: '20px', stCardPadSm: '16px 20px', curCardPad: '16px', mCardPad: '16px',
+      resHead: 'flex-direction: column; align-items: flex-start; gap: 12px',
+      resActions: 'flex-direction: column; align-items: stretch; gap: 12px',
+      resActionsLeft: 'flex-direction: column; align-items: stretch; gap: 8px; text-align: center',
+      footAlign: 'left',
+      dlgOuter: 'align-items: flex-end; padding: 0', dlgMax: '100%', dlgPad: '20px 16px 24px', dlgRadius: '12px 12px 0 0', h2dlg: 'font-size: 20px; line-height: 28px',
+      dlgActions: 'flex-direction: column-reverse; align-items: stretch',
+      tabsRow: 'flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px',
+      curCols: 'minmax(0, 1fr)', curActions: 'flex-direction: column-reverse; align-items: stretch', curRight: 'flex-direction: column; align-items: stretch', kbdHint: false,
+      segMax: '100%', tipW: '260px',
+      mGrid: "grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: 'grip text edit' '. pts .'",
+      mIndent: 'margin-left: 52px', mTextPadTop: '11px', mFooter: 'flex-direction: column; align-items: stretch', ruleH: '44px', commentRows: '4'
+    } : {
+      appBarH: '64px', appBarPad: '0 24px 0 32px', bodyFs: '16px',
+      h1: 'font-size: 28px; line-height: 36px', h1cur: 'font-size: 24px; line-height: 32px', display: 'font-size: 32px; line-height: 40px',
+      stGap: '24px', stCardPad: '32px', stCardPadX: '32px', stCardPadSm: '20px 32px', curCardPad: '20px', mCardPad: '24px',
+      resHead: 'flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px',
+      resActions: 'flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px',
+      resActionsLeft: 'flex-direction: row; align-items: center; gap: 16px',
+      footAlign: 'right',
+      dlgOuter: 'align-items: center; padding: 24px', dlgMax: '520px', dlgPad: '24px', dlgRadius: '12px', h2dlg: 'font-size: 22px; line-height: 30px',
+      dlgActions: 'flex-direction: row; justify-content: flex-end; align-items: center',
+      tabsRow: 'flex-wrap: wrap',
+      curCols: 'minmax(0, 1fr) minmax(0, 1fr)', curActions: 'flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap', curRight: 'flex-direction: row; align-items: center; margin-left: auto', kbdHint: true,
+      segMax: '520px', tipW: '300px',
+      mGrid: "grid-template-columns: 32px minmax(0, 1fr) auto auto; grid-template-areas: 'grip text pts edit'",
+      mIndent: 'margin-left: 40px', mTextPadTop: '5px', mFooter: 'flex-direction: row; align-items: center; justify-content: space-between', ruleH: '32px', commentRows: '2'
+    };
+
+    var tr = motion ? '' : 'transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease; ';
+    var btn = function (h) {
+      return 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: ' + h + 'px; padding: 0 ' + (isPhone ? 20 : 18) + 'px; border-radius: 10px; font-family: ' + F + '; font-size: ' + (isPhone ? 16 : 15) + 'px; font-weight: 700; line-height: 20px; white-space: nowrap; cursor: pointer; ' + tr + (isPhone ? 'width: 100%; ' : '');
+    };
+    var bh = isPhone ? 48 : 40;
+    var dh = isPhone ? 48 : 36;
+    var primary = 'background: ' + T.accent + '; color: ' + T.onAccent + '; border: 1px solid ' + T.accent;
+    var primaryOff = 'background: ' + T.disabledBg + '; color: ' + T.disabledText + '; border: 1px solid ' + T.disabledBg + '; cursor: not-allowed';
+    var secondary = 'background: ' + T.surface + '; color: ' + T.text + '; border: 1px solid ' + T.borderStrong;
+    var secondaryOff = 'background: ' + T.surface + '; color: ' + T.disabledText + '; border: 1px solid ' + T.border + '; cursor: not-allowed';
+    var g = isPhone ? 44 : 32;
+    var tw = isPhone ? 52 : 44;
+    var th = isPhone ? 32 : 24;
+
+    var S = {
+      card: 'background: ' + T.surface + '; border: 1px solid ' + T.border + '; border-radius: 12px',
+      h2: 'margin: 0; font-size: ' + (isPhone ? 17 : 18) + 'px; line-height: 26px; font-weight: 800; letter-spacing: -0.01em; color: ' + T.text,
+      btnPrimary: btn(bh) + primary,
+      btnSecondary: btn(bh) + secondary,
+      btnPrimaryCur: btn(dh) + primary,
+      btnDangerCur: btn(dh) + 'background: ' + T.surface + '; color: ' + T.danger + '; border: 1px solid ' + T.danger,
+      iconBtn: 'display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: none; border-radius: 10px; background: transparent; color: ' + T.text2 + '; cursor: pointer; flex: none',
+      badgeAI: 'display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; background: ' + T.accentSubtle + '; color: ' + T.accentText + '; font-size: 13px; line-height: 16px; font-weight: 700; white-space: nowrap',
+      badgeAISm: 'display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: ' + T.accentSubtle + '; color: ' + T.accentText + '; font-size: 12px; line-height: 16px; font-weight: 700; white-space: nowrap',
+      badgeNeutral: 'display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; background: ' + T.subtle + '; color: ' + T.text2 + '; border: 1px solid ' + T.border + '; font-size: 13px; line-height: 16px; font-weight: 700; white-space: nowrap',
+      badgeWarnSm: 'display: inline-flex; align-items: center; gap: 5px; min-height: 24px; padding: 2px 10px; border-radius: 999px; background: ' + T.warningBg + '; color: ' + T.warning + '; border: 1px solid ' + T.warningBorder + '; font-size: 12px; line-height: 16px; font-weight: 700',
+      badgeChanged: 'display: inline-flex; align-items: center; min-height: 22px; padding: 1px 8px; border-radius: 999px; background: ' + T.accentSubtle + '; color: ' + T.accentText + '; font-size: 12px; line-height: 16px; font-weight: 700',
+      chip: 'display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: ' + T.subtle + '; color: ' + T.text2 + '; font-size: 13px; line-height: 16px; font-weight: 600; white-space: nowrap',
+      textarea: 'display: block; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid ' + T.borderStrong + '; background: ' + T.surface + '; color: ' + T.text + '; font-family: ' + F + '; font-size: ' + (isPhone ? 16 : 15) + 'px; line-height: 24px; font-weight: 500; resize: vertical',
+      textareaDense: 'display: block; width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid ' + T.borderStrong + '; background: ' + T.surface + '; color: ' + T.text + '; font-family: ' + F + '; font-size: ' + (isPhone ? 16 : 14) + 'px; line-height: 22px; font-weight: 500; resize: vertical',
+      inputDense: 'height: ' + (isPhone ? 44 : 32) + 'px; padding: 0 10px; border-radius: 8px; border: 1px solid ' + T.borderStrong + '; background: ' + T.surface + '; color: ' + T.text + '; font-family: ' + F + '; font-size: ' + (isPhone ? 16 : 14) + 'px; font-weight: 500',
+      numInput: 'width: ' + (isPhone ? 76 : 64) + 'px; height: ' + (isPhone ? 44 : 36) + 'px; padding: 0 6px 0 10px; border-radius: 8px; border: 1px solid ' + T.borderStrong + '; background: ' + T.surface + '; color: ' + T.text + '; font-family: ' + F + '; font-size: ' + (isPhone ? 16 : 15) + 'px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums',
+      grip: 'display: inline-flex; align-items: center; justify-content: center; width: ' + g + 'px; height: ' + g + 'px; padding: 0; border: none; border-radius: 8px; background: transparent; color: ' + T.muted + '; cursor: grab',
+      iconBtnSm: 'display: inline-flex; align-items: center; justify-content: center; width: ' + g + 'px; height: ' + g + 'px; padding: 0; border: none; border-radius: 8px; background: transparent; color: ' + T.text2 + '; cursor: pointer',
+      iconBtnXs: 'display: inline-flex; align-items: center; justify-content: center; width: ' + (isPhone ? 44 : 28) + 'px; height: ' + (isPhone ? 44 : 28) + 'px; padding: 0; border: none; border-radius: 8px; background: transparent; color: ' + T.muted + '; cursor: pointer; flex: none',
+      btnSmall: 'display: inline-flex; align-items: center; justify-content: center; height: ' + g + 'px; padding: 0 12px; border-radius: 8px; border: none; background: ' + T.accentSubtle + '; color: ' + T.accentText + '; font-family: ' + F + '; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap',
+      link: 'display: inline-flex; align-items: center; min-height: ' + (isPhone ? 44 : 30) + 'px; padding: 0; border: none; background: transparent; color: ' + T.link + '; font-family: ' + F + '; font-size: 14px; line-height: 20px; font-weight: 700; cursor: pointer; text-align: left',
+      linkStrong: 'display: inline-flex; align-items: center; min-height: ' + (isPhone ? 44 : 36) + 'px; padding: 0; border: none; background: transparent; color: ' + T.link + '; font-family: ' + F + '; font-size: 15px; line-height: 20px; font-weight: 800; cursor: pointer',
+      settingRow: 'display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1px solid ' + T.border,
+      settingLabel: 'min-width: 0; font-size: 15px; line-height: 22px; font-weight: 600; color: ' + T.text,
+      switchBtn: 'display: inline-flex; align-items: center; justify-content: flex-end; width: ' + (tw + 8) + 'px; height: 44px; padding: 0; border: none; background: transparent; cursor: pointer; flex: none'
+    };
+
+    var seg = function (on, locked) {
+      var base = 'display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: ' + (isPhone ? 44 : 40) + 'px; padding: 0 8px; border-radius: 9px; font-family: ' + F + '; font-size: 15px; line-height: 20px; font-weight: 700; white-space: nowrap; ' + tr;
+      if (locked) return base + 'border: 1px dashed ' + T.borderStrong + '; background: transparent; color: ' + T.muted + '; cursor: not-allowed';
+      if (on) return base + 'border: 1px solid ' + T.accent + '; background: ' + T.accent + '; color: ' + T.onAccent + '; cursor: pointer';
+      return base + 'border: 1px solid transparent; background: transparent; color: ' + T.text2 + '; cursor: pointer';
+    };
+
+    var tbBtn = function (on) {
+      return 'display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 8px; border: none; font-family: ' + F + '; font-size: 13px; line-height: 16px; font-weight: 700; white-space: nowrap; cursor: pointer; background: ' + (on ? '#7E36FC' : 'transparent') + '; color: ' + (on ? '#FFFFFF' : '#C5CBDA');
+    };
+
+    // Панель прототипа
+    var roleItems = [['student', '1 · Ученик'], ['curator', '2 · Куратор'], ['methodist', '3 · Методист']];
+    var tbRoles = roleItems.map(function (r) {
+      return {
+        label: r[1], on: st.role === r[0], style: tbBtn(st.role === r[0]),
+        pick: function () {
+          self.clearTimers();
+          var next = { role: r[0], dialogOpen: false, tip: false };
+          if (self.state.sScreen === 'checking') next.sScreen = 'result';
+          self.setState(next);
+          self.scrollTop();
+        }
+      };
+    });
+    var isStudent = st.role === 'student';
+    var stateItems = [
+      ['result', '1 · Результат', isStudent && st.sScreen === 'result' && !st.dialogOpen],
+      ['checking', '1a · ИИ проверяет', isStudent && st.sScreen === 'checking'],
+      ['appeal', '1b · Апелляция', isStudent && st.dialogOpen],
+      ['rework', 'Доработка', isStudent && st.sScreen === 'rework']
+    ];
+    var tbStates = stateItems.map(function (s) {
+      return { label: s[1], on: s[2], style: tbBtn(s[2]), pick: function () { self.jump(s[0]); } };
+    });
+    var tbThemes = [['light', 'Светлая'], ['dark', 'Тёмная']].map(function (t) {
+      return { label: t[1], on: st.theme === t[0], style: tbBtn(st.theme === t[0]), pick: function () { self.setState({ theme: t[0] }); } };
+    });
+    var tbDevices = [['desktop', 'Десктоп · 1440'], ['phone', 'Телефон · 390']].map(function (d) {
+      return { label: d[1], on: st.device === d[0], style: tbBtn(st.device === d[0]), pick: function () { self.setState({ device: d[0], tip: false }); } };
+    });
+
+    // Ученик
+    var attemptsLeft = Math.max(0, 3 - st.attemptsUsed);
+    var attemptsLeftText = attemptsLeft === 0 ? 'попыток не осталось' : (attemptsLeft === 1 ? 'осталась 1 попытка' : 'осталось ' + attemptsLeft + ' ' + plural(attemptsLeft, ['попытка', 'попытки', 'попыток']));
+    var fixDisabled = st.appealPending || attemptsLeft === 0;
+    var titles = { result: 'Результат проверки', checking: 'Работа на проверке', rework: 'Доработка ответа' };
+    var submitDisabled = !st.draft.trim();
+
+    // Куратор
+    var work = this.currentWork();
+    var tabs = K.tabs.map(function (t) {
+      var on = st.tab === t.id;
+      return {
+        label: t.label, count: st.counts[t.id], on: on,
+        style: 'display: inline-flex; align-items: center; height: ' + (isPhone ? 44 : 36) + 'px; padding: 0 ' + (isPhone ? 16 : 14) + 'px; border-radius: 999px; font-family: ' + F + '; font-size: 14px; line-height: 18px; font-weight: 700; white-space: nowrap; cursor: pointer; flex: none; ' + tr +
+          (on ? 'background: ' + T.accent + '; color: ' + T.onAccent + '; border: 1px solid ' + T.accent : 'background: ' + T.surface + '; color: ' + T.text2 + '; border: 1px solid ' + T.border),
+        pick: function () { self.pickTab(t.id); }
+      };
+    });
+    var markBase = 'color: ' + T.text + '; padding: 3px 4px; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; ';
+    var W = {
+      student: work.student, attempt: work.attempt, time: work.time,
+      hasCtx: !!work.ctx, ctx: work.ctx || '',
+      canReturn: st.tab === 'confirm' || st.tab === 'need',
+      segments: work.segs.map(function (s) {
+        var hl = !!s[1];
+        var warn = s[2] === 'warn';
+        return {
+          t: s[0], plain: !hl, hl: hl,
+          tag: hl ? (warn ? s[1] + ' · спорно' : s[1]) : '',
+          markStyle: markBase + (warn ? 'background: ' + T.hlWarn + '; box-shadow: inset 0 -2px 0 ' + T.warningIcon : 'background: ' + T.hlNeutral),
+          tagStyle: 'display: inline-block; margin-left: 6px; padding: 0 5px; border-radius: 4px; font-size: 11px; line-height: 16px; font-weight: 800; vertical-align: 1px; ' +
+            (warn ? 'background: ' + T.warning + '; color: ' + T.glyph : 'background: ' + T.surface + '; color: ' + T.text2 + '; border: 1px solid ' + T.border)
+        };
+      })
+    };
+    var aiTotal = 0, maxTotal = 0, curTotal = 0;
+    var curEls = work.els.map(function (el, i) {
+      var ed = st.edits[i] || { cur: el.ai, reason: '', note: '' };
+      var changed = ed.cur !== '' && ed.cur !== el.ai;
+      var reasonErr = st.reasonError && changed && !ed.reason;
+      aiTotal += el.ai;
+      maxTotal += el.max;
+      curTotal += ed.cur === '' ? 0 : ed.cur;
+      return {
+        code: el.code, name: el.name, max: el.max, cur: ed.cur, reason: ed.reason,
+        sure: el.conf === 'sure', split: el.conf === 'split', confText: el.confText || '',
+        changed: changed, reasonErr: reasonErr,
+        nameWeight: changed || el.conf === 'split' ? '800' : '600',
+        inputId: 'score-' + i, selectId: 'reason-' + i,
+        extraLabel: ed.reason === 'extra' && ed.note ? 'засчитал лишнее: ' + ed.note : 'засчитал лишнее',
+        inputStyle: 'width: ' + (isPhone ? 64 : 56) + 'px; height: ' + (isPhone ? 44 : 32) + 'px; padding: 0 4px 0 10px; border-radius: 8px; font-family: ' + F + '; font-size: 15px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; ' +
+          (changed ? 'border: 2px solid ' + T.accent + '; background: ' + T.accentSubtle + '; color: ' + T.accentText : 'border: 1px solid ' + T.borderStrong + '; background: ' + T.surface + '; color: ' + T.text),
+        selectStyle: 'width: 100%; height: ' + (isPhone ? 44 : 34) + 'px; padding: 0 10px; border-radius: 8px; border: 1px solid ' + (reasonErr ? T.danger : T.borderStrong) + '; background: ' + T.surface + '; color: ' + T.text + '; font-family: ' + F + '; font-size: ' + (isPhone ? 16 : 14) + 'px; font-weight: 600; cursor: pointer',
+        onChange: function (e) { self.setScore(i, e.target.value); },
+        onReason: function (e) { self.setReason(i, e.target.value); }
+      };
+    });
+
+    // Методист
+    var maxPts = 0;
+    var mEls = st.mEls.map(function (m, i) {
+      var n = parseInt(m.pts, 10) || 0;
+      maxPts += n;
+      var code = 'Э' + (i + 1);
+      var dragging = st.dragId === m.id;
+      var over = !!st.dragId && st.overId === m.id && st.dragId !== m.id;
+      return {
+        id: m.id, code: code, text: m.text, pts: m.pts, ptsWord: self.plural(n, ['балл', 'балла', 'баллов']),
+        editing: !!m.editing, view: !m.editing, textId: 'm-text-' + m.id, gripId: 'grip-' + m.id,
+        draggable: st.armed === m.id ? 'true' : 'false',
+        gripLabel: 'Переместить ' + code + ': перетащите или нажмите стрелку вверх или вниз',
+        ptsLabel: 'Баллы за ' + code, editLabel: 'Редактировать ' + code,
+        hasRules: m.rules.length > 0,
+        rowStyle: 'display: flex; flex-direction: column; gap: 6px; padding: ' + (isPhone ? '8px 8px 10px' : '10px 12px 10px 8px') + '; border-radius: 10px; background: ' + T.surface + '; border: 1px solid ' + (over ? T.accent : T.border) + '; box-shadow: ' + (over ? '0 0 0 1px ' + T.accent : 'none') + '; opacity: ' + (dragging ? '0.5' : '1'),
+        rules: m.rules.map(function (r) {
+          var isErr = r.kind === 'err';
+          return {
+            inputId: 'rule-' + r.id, text: r.text, editing: !!r.editing, view: !r.editing,
+            kindLabel: isErr ? 'Не засчитывать:' : 'Допустимо:',
+            kindColor: isErr ? T.danger : T.success,
+            aria: (isErr ? 'Типичная ошибка для ' : 'Допустимая формулировка для ') + code,
+            placeholder: isErr ? 'Что не засчитывать за этот элемент' : 'Другая верная формулировка',
+            removeLabel: 'Удалить правило ' + code,
+            onText: function (e) { var v = e.target.value; self.updEl(m.id, function (c) { c.rules.forEach(function (x) { if (x.id === r.id) x.text = v; }); }); },
+            onDone: function () { self.ruleDone(m.id, r.id); },
+            onKey: function (e) { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); self.ruleDone(m.id, r.id); } },
+            onRemove: function () { self.updEl(m.id, function (c) { c.rules = c.rules.filter(function (x) { return x.id !== r.id; }); }); }
+          };
+        }),
+        arm: function () { self.setState({ armed: m.id }); },
+        onGripKey: function (e) {
+          if (e.key === 'ArrowUp') { e.preventDefault(); self.moveEl(m.id, -1); }
+          if (e.key === 'ArrowDown') { e.preventDefault(); self.moveEl(m.id, 1); }
+        },
+        onDragStart: function (e) {
+          try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', m.id); } catch (err) { }
+          self.setState({ dragId: m.id });
+        },
+        onDragOver: function (e) {
+          if (!self.state.dragId) return;
+          e.preventDefault();
+          if (self.state.overId !== m.id) self.setState({ overId: m.id });
+        },
+        onDrop: function (e) { e.preventDefault(); self.dropOn(m.id); },
+        onDragEnd: function () { self.setState({ dragId: null, overId: null, armed: null }); },
+        onText: function (e) { var v = e.target.value; self.updEl(m.id, function (c) { c.text = v; }); },
+        onPts: function (e) {
+          var v = e.target.value;
+          if (v !== '') v = String(Math.max(0, Math.min(10, parseInt(v, 10) || 0)));
+          self.updEl(m.id, function (c) { c.pts = v; });
+        },
+        fixPts: function () { self.updEl(m.id, function (c) { if (c.pts === '') c.pts = '0'; }); },
+        onEdit: function () { self.pendingFocus = 'm-text-' + m.id; self.updEl(m.id, function (c) { c.editing = true; }); },
+        onDone: function () { self.elDone(m.id); },
+        onAddAlt: function () { self.addRule(m.id, 'alt'); },
+        onAddErr: function () { self.addRule(m.id, 'err'); }
+      };
+    });
+
+    var role = st.role;
+    return {
+      F: F, T: T, L: L, S: S, X: X,
+      chromeOn: chromeOn,
+      phoneStageLabel: framed,
+      tbPos: this.narrow ? 'position: relative' : 'position: sticky; top: 0',
+      scrollerRef: this.scrollerRef,
+      tbRoles: tbRoles, tbStates: tbStates, tbThemes: tbThemes, tbDevices: tbDevices,
+      tbReset: 'display: inline-flex; align-items: center; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid #343A52; background: transparent; color: #E8EAF2; font-family: ' + F + '; font-size: 13px; line-height: 16px; font-weight: 700; white-space: nowrap; cursor: pointer',
+      onReset: function () {
+        self.clearTimers();
+        var s = self.seed({ screen: 'result', theme: self.state.theme, device: self.state.device });
+        s.role = self.state.role;
+        self.setState(s);
+        self.scrollTop();
+      },
+
+      isStudent: isStudent, isCurator: role === 'curator', isMethodist: role === 'methodist',
+      appSub: role === 'curator' ? 'Кабинет куратора' : (role === 'methodist' ? 'Редактор курса' : 'Олимпиадная биология'),
+      avatar: role === 'curator' ? 'ЕМ' : (role === 'methodist' ? 'ТВ' : 'АН'),
+      mainPad: role === 'curator' ? (isPhone ? '16px 16px 40px' : '24px 32px 48px') : (isPhone ? '20px 16px 48px' : '40px 32px 72px'),
+
+      studentTitle: titles[st.sScreen] || titles.result,
+      sResult: st.sScreen === 'result', sChecking: st.sScreen === 'checking', sRework: st.sScreen === 'rework',
+      checkedAgo: st.checkedAgo,
+      appealPending: st.appealPending,
+      fixDisabled: fixDisabled,
+      fixBtnStyle: btn(bh) + (fixDisabled ? primaryOff : primary),
+      disagreeBtnStyle: btn(bh) + (st.appealPending ? secondaryOff : secondary),
+      attemptsLeftText: attemptsLeftText,
+      resultFootnote: st.appealPending ? 'Апелляция отправлена. Пока её рассматривают, пересдача недоступна.' : 'Оспаривание рассмотрит другой куратор. Балл может и вырасти, и снизиться.',
+      onFix: function () {
+        var s2 = self.state;
+        if (s2.appealPending || Math.max(0, 3 - s2.attemptsUsed) === 0) return;
+        self.setState({ sScreen: 'rework', draft: s2.submitted });
+        self.scrollTop();
+      },
+      onDisagree: function () {
+        if (self.state.appealPending) return;
+        self.pendingFocus = 'appeal-reason';
+        self.setState({ dialogOpen: true, appealError: false });
+      },
+      progress: st.progress,
+      progressPct: st.progress + '%',
+      progressTransition: motion || isStatic ? '' : 'transition: width 2400ms cubic-bezier(0.22, 0.61, 0.36, 1)',
+      answerOpen: st.answerOpen,
+      answerToggleText: st.answerOpen ? 'Скрыть' : 'Показать',
+      chevronRot: st.answerOpen ? '180deg' : '0deg',
+      toggleAnswer: function () { self.setState({ answerOpen: !self.state.answerOpen }); },
+      submitted: st.submitted,
+      draft: st.draft,
+      onDraft: function (e) { self.setState({ draft: e.target.value }); },
+      attemptNo: Math.min(3, st.attemptsUsed + 1),
+      submitDisabled: submitDisabled,
+      submitBtnStyle: btn(bh) + (submitDisabled ? primaryOff : primary),
+      onSubmitWork: function () { self.submitWork(); },
+      onCancelRework: function () { self.setState({ sScreen: 'result' }); self.scrollTop(); },
+
+      dialogOpen: st.dialogOpen,
+      onOverlayClick: function (e) { if (e.target === e.currentTarget) self.appealCancel(); },
+      onDialogKey: function (e) { if (e.key === 'Escape') { e.stopPropagation(); self.appealCancel(); } },
+      onAppealCancel: function () { self.appealCancel(); },
+      appealText: st.appealText,
+      onAppealText: function (e) { self.setState({ appealText: e.target.value, appealError: false }); },
+      appealError: st.appealError,
+      appealFieldStyle: S.textarea + (st.appealError ? '; border: 2px solid ' + T.danger : ''),
+      onAppealSubmit: function () { self.appealSubmit(); },
+
+      hasToast: !!st.toast,
+      toast: st.toast,
+
+      tabs: tabs,
+      W: W,
+      aiTotal: aiTotal, maxTotal: maxTotal, curTotal: curTotal,
+      curEls: curEls,
+      comment: st.comment,
+      onComment: function (e) { self.setState({ comment: e.target.value }); },
+      onReturn: function () { self.advance('Работа возвращена на доработку'); },
+      onConfirm: function () { self.confirmWork(); },
+      onCardKey: function (e) {
+        if (e.key !== 'Enter' || e.shiftKey) return;
+        var tag = (e.target && e.target.tagName) || '';
+        if (tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'A') return;
+        e.preventDefault();
+        self.confirmWork();
+      },
+
+      modeOff: st.mode === 'off', modeAssist: st.mode === 'assist',
+      segOffStyle: seg(st.mode === 'off', false),
+      segAssistStyle: seg(st.mode === 'assist', false),
+      segAutoStyle: seg(false, true),
+      setModeOff: function () { self.setState({ mode: 'off' }); },
+      setModeAssist: function () { self.setState({ mode: 'assist' }); },
+      tip: st.tip,
+      showTip: function () { if (!self.state.tip) self.setState({ tip: true }); },
+      hideTip: function () { if (self.state.tip) self.setState({ tip: false }); },
+      tipKey: function (e) { if (e.key === 'Escape') self.setState({ tip: false }); },
+      maxPts: maxPts,
+      maxPtsWord: plural(maxPts, ['балл', 'балла', 'баллов']),
+      mEls: mEls,
+      disarm: function () { if (!self.state.dragId) self.setState({ armed: null }); },
+      addElement: function () { self.addElement(); },
+      photoAI: st.photoAI,
+      togglePhoto: function () { self.setState({ photoAI: !self.state.photoAI }); },
+      switchTrack: 'position: relative; display: block; width: ' + tw + 'px; height: ' + th + 'px; border-radius: 999px; background: ' + (st.photoAI ? T.accent : T.borderStrong) + '; ' + (motion ? '' : 'transition: background-color 150ms ease'),
+      switchThumb: 'position: absolute; top: 3px; left: ' + (st.photoAI ? tw - th + 3 : 3) + 'px; width: ' + (th - 6) + 'px; height: ' + (th - 6) + 'px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(2, 6, 24, 0.3); ' + (motion ? '' : 'transition: left 150ms ease'),
+      autoAttempts: st.autoAttempts, auditPct: st.auditPct, rollbackPct: st.rollbackPct,
+      onAttempts: function (e) { self.setState({ autoAttempts: e.target.value }); },
+      onAudit: function (e) { self.setState({ auditPct: e.target.value }); },
+      onRollback: function (e) { self.setState({ rollbackPct: e.target.value }); },
+      fixAttempts: function () { self.clampField('autoAttempts', 1, 10, 3); },
+      fixAudit: function () { self.clampField('auditPct', 0, 100, 10); },
+      fixRollback: function () { self.clampField('rollbackPct', 0, 100, 85); },
+      onSave: function () { self.showToast('Настройки сохранены'); }
+    };
+  }
+}
+</script>
+</body>
+</html>
